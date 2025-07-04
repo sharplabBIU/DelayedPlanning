@@ -1,0 +1,11 @@
+questionText,type,options,questionWidth,responseWidth
+Dissatisfied,rating,"1,2,3,4,5",1,1
+Alert,rating,"1,2,3,4,5",1,1
+Depressed,rating,"1,2,3,4,5",1,1
+Sad,rating,"1,2,3,4,5",1,1
+Active,rating,"1,2,3,4,5",1,1
+Impatient,rating,"1,2,3,4,5",1,1
+Annoyed,rating,"1,2,3,4,5",1,1
+Angry,rating,"1,2,3,4,5",1,1
+Irritated,rating,"1,2,3,4,5",1,1
+Grouchy,rating,"1,2,3,4,5",1,1
