@@ -16,18 +16,18 @@ Planning is computationally costly.  In complex, multi‑step problems it is oft
 .
 ├── study1/                       ← Material for Experiment 1
 │   ├── data/                     ← Raw .csv files (filenames begin with 5* or 6*)
-│   ├── preprocess_raw_data.py    ← Cleaning / wrangling script
+│   ├── data/preprocess_raw_data.py    ← Cleaning / wrangling script
 │   └── analysis.ipynb            ← Main analysis notebook
 │
 ├── study2/                       ← Material for Experiment 2
 │   ├── data/
-│   ├── preprocess_raw_data.py
+│   ├── data/preprocess_raw_data.py
 │   └── analysis.ipynb
 │
 └── README.md                     ← *You are here*
 ```
 
-> **Quick links** • [study 1](./study1/) → [data](./study1/data/) · [preprocess\_raw\_data.py](./study1/preprocess_raw_data.py) · [analysis.ipynb](./study1/analysis.ipynb) • [study 2](./study2/) → [data](./study2/data/) · [preprocess\_raw\_data.py](./study2/preprocess_raw_data.py) · [analysis.ipynb](./study2/analysis.ipynb)
+> **Quick links** • [study 1](./study1/) → [data](./study1/data/) · [preprocess\_raw\_data.py](./study1/data/preprocess_raw_data.py) · [analysis.ipynb](./study1/analysis.ipynb) • [study 2](./study2/) → [data](./study2/data/) · [preprocess\_raw\_data.py](./study2/data/preprocess_raw_data.py) · [analysis.ipynb](./study2/analysis.ipynb)
 
 ---
 
