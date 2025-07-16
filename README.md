@@ -163,7 +163,7 @@ Pull requests are welcome!  If you find a bug or have a suggestion, please open 
 
 ## 🛡️ License
 
-This project is licensed under the MIT License – see `LICENSE` for details.
+This project is licensed under the CC-BY-4.0 License – see `LICENSE` for details.
 
 ---
 
