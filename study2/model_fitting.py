@@ -7289,232 +7289,230 @@ def process_subject_MLE(subject, parameter_info, all_data, lik_func, parameter_s
 ############################################################# BUILD MODELS TO BE FIT #########################################################
 
 #General parameters for fitting
-parameter_sample_size=8000
+parameter_sample_size=10000
 import multiprocessing
 
 cores_total = multiprocessing.cpu_count()
 cores_subs = max(1, cores_total - 2)  # leave 2 cores for OS / overhead
 
-# ========== 1. MB_actionSeparation =====================================
-# name_1 = 'MBMC_optimal'
-# group_parameters_info_1 = {
-#     'MB_B': ['gamma', [1, 1]]              # mb_control
-# }
-# likelihood = 'MB_actionSeparation'
-# build_model(name_1, likelihood, group_parameters_info_1,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_optimal)
+#========== 1. MB_actionSeparation =====================================
+name_1 = 'MBMC_optimal'
+group_parameters_info_1 = {
+    'MB_B': ['gamma', [1, 1]]              # mb_control
+}
+likelihood = 'MB_actionSeparation'
+build_model(name_1, likelihood, group_parameters_info_1,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_optimal)
 
 
-# # ========== 2. MB_Depth_actionSeparation ==============================
-# name_2 = 'MBMC_Depth'
-# group_parameters_info_2 = {
-#     'MB_B':     ['gamma', [1, 1]],
-#     'MB_depth': ['beta',  [1, 1]]          # discount_rate
-# }
-# likelihood = 'MB_Depth_actionSeparation'
-# build_model(name_2, likelihood, group_parameters_info_2,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Depth)
+# ========== 2. MB_Depth_actionSeparation ==============================
+name_2 = 'MBMC_Depth'
+group_parameters_info_2 = {
+    'MB_B':     ['gamma', [1, 1]],
+    'MB_depth': ['beta',  [1, 1]]          # discount_rate
+}
+likelihood = 'MB_Depth_actionSeparation'
+build_model(name_2, likelihood, group_parameters_info_2,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Depth)
 
 
-# # ========== 3. MB_Breadth_actionSeparation ============================
-# name_3 = 'MBMC_Breadth2'
-# group_parameters_info_3 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]],
-#     'breadth2':    ['beta',  [1, 1]]
-# }
-# likelihood = 'MB_Breadth_actionSeparation'
-# build_model(name_3, likelihood, group_parameters_info_3,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2)
+# ========== 3. MB_Breadth_actionSeparation ============================
+name_3 = 'MBMC_Breadth2'
+group_parameters_info_3 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]],
+    'breadth2':    ['beta',  [1, 1]]
+}
+likelihood = 'MB_Breadth_actionSeparation'
+build_model(name_3, likelihood, group_parameters_info_3,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2)
 
 
-# # ========== 4. MB_oneBreadth_Depth_actionSeparation ===================
-# name_4 = 'MBMC_Breadth1'
-# group_parameters_info_4 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_depth':    ['beta',  [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]]       # same breadth for both steps
-# }
-# likelihood = 'MB_oneBreadth_Depth_actionSeparation'
-# build_model(name_4, likelihood, group_parameters_info_4,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth1)
+# ========== 4. MB_oneBreadth_Depth_actionSeparation ===================
+name_4 = 'MBMC_Breadth1'
+group_parameters_info_4 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_depth':    ['beta',  [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]]       # same breadth for both steps
+}
+likelihood = 'MB_oneBreadth_Depth_actionSeparation'
+build_model(name_4, likelihood, group_parameters_info_4,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth1)
 
 
-# # ========== 5. MB_Breadth_Depth_actionSeparation ======================
-# name_5 = 'MBMC_Breadth2_Depth'
-# group_parameters_info_5 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_depth':    ['beta',  [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]],
-#     'breadth2':    ['beta',  [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation'
-# build_model(name_5, likelihood, group_parameters_info_5,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth)
+# ========== 5. MB_Breadth_Depth_actionSeparation ======================
+name_5 = 'MBMC_Breadth2_Depth'
+group_parameters_info_5 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_depth':    ['beta',  [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]],
+    'breadth2':    ['beta',  [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation'
+build_model(name_5, likelihood, group_parameters_info_5,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth)
 
 
-# # ========== 6. MB_Breadth_Depth_actionSeparation_MBcache1_fullmemory ==
-# name_6 = 'MBMC_Breadth2_Depth_CC'
-# group_parameters_info_6 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_depth':    ['beta',  [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]],
-#     'breadth2':    ['beta',  [1, 1]],
-#     'mbcache':     ['gamma', [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache1_fullmemory'
-# build_model(name_6, likelihood, group_parameters_info_6,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CC)
+# ========== 6. MB_Breadth_Depth_actionSeparation_MBcache1_fullmemory ==
+name_6 = 'MBMC_Breadth2_Depth_CC'
+group_parameters_info_6 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_depth':    ['beta',  [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]],
+    'breadth2':    ['beta',  [1, 1]],
+    'mbcache':     ['gamma', [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache1_fullmemory'
+build_model(name_6, likelihood, group_parameters_info_6,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CC)
 
 
-# # ========== 7. MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory ==
-# name_7 = 'MBMC_Breadth2_Depth_CCR'
-# group_parameters_info_7 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_depth':    ['beta',  [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]],
-#     'breadth2':    ['beta',  [1, 1]],
-#     'mbcache':     ['gamma', [1, 1]],
-#     'cache_reward':['norm',  [0, 5]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory'
-# build_model(name_7, likelihood, group_parameters_info_7,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CCR)
+# ========== 7. MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory ==
+name_7 = 'MBMC_Breadth2_Depth_CCR'
+group_parameters_info_7 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_depth':    ['beta',  [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]],
+    'breadth2':    ['beta',  [1, 1]],
+    'mbcache':     ['gamma', [1, 1]],
+    'cache_reward':['norm',  [0, 5]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory'
+build_model(name_7, likelihood, group_parameters_info_7,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CCR)
 
-# # ========== 7. MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory ==
-# name_7 = 'MBMC_Breadth2_Depth_CCRF'
-# group_parameters_info_7 = {
-#     'MB_B':        ['gamma', [1, 1]],
-#     'MB_depth':    ['beta',  [1, 1]],
-#     'MB_breadth':  ['beta',  [1, 1]],
-#     'breadth2':    ['beta',  [1, 1]],
-#     'mbcache':     ['gamma', [1, 1]],
-#     'cache_reward':['norm',  [0, 5]],
-# 	'forget':['gamma',  [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache2_limitedmemory'
-# build_model(name_7, likelihood, group_parameters_info_7,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CCRF)
-
-
-
-# # ========== 8. MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting =
-# name_8 = 'MBMC_Breadth2_Depth_CCRF_CB'
-# group_parameters_info_8 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting'
-# build_model(name_8, likelihood, group_parameters_info_8,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CCRF_CB)
+# ========== 7. MB_Breadth_Depth_actionSeparation_MBcache2_fullmemory ==
+name_7 = 'MBMC_Breadth2_Depth_CCRF'
+group_parameters_info_7 = {
+    'MB_B':        ['gamma', [1, 1]],
+    'MB_depth':    ['beta',  [1, 1]],
+    'MB_breadth':  ['beta',  [1, 1]],
+    'breadth2':    ['beta',  [1, 1]],
+    'mbcache':     ['gamma', [1, 1]],
+    'cache_reward':['norm',  [0, 5]],
+	'forget':['gamma',  [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache2_limitedmemory'
+build_model(name_7, likelihood, group_parameters_info_7,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CCRF)
 
 
 
-# # ========== win. MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_Exec=
+# ========== 8. MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting =
+name_8 = 'MBMC_Breadth2_Depth_CCRF_CB'
+group_parameters_info_8 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting'
+build_model(name_8, likelihood, group_parameters_info_8,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CCRF_CB)
 
-# name_X = 'MBMC_Breadth2_Depth_CCRF_CB_PE'
-# group_parameters_info_8 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]],
-# 	'cache_plan': ['gamma',  [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_execution'
-# build_model(name_X, likelihood, group_parameters_info_8,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CCRF_CB_PE)
+# ========== win. MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_Exec=
 
-
-# # ========== 9. MBcache + CB + forgetR ================================
-# name_9 = 'MBMCF_Breadth2_Depth_CCRF_CB'
-# group_parameters_info_9 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]],
-#     'forgetR':      ['gamma', [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgettingRoutesAndCache'
-# build_model(name_9, likelihood, group_parameters_info_9,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMCF_Breadth2_Depth_CCRF_CB)
+name_X = 'MBMC_Breadth2_Depth_CCRF_CB_PE'
+group_parameters_info_8 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]],
+	'cache_plan': ['gamma',  [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_execution'
+build_model(name_X, likelihood, group_parameters_info_8,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CCRF_CB_PE)
 
 
-# ==========10. cache replacement variant =============================
-# name_10 = 'MBMCreplace_Breadth2_Depth_CCRF_CB_PE'
-# group_parameters_info_10 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]],
-#     'cache_plan':      ['gamma', [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_replacement_execution'
-# build_model(name_10, likelihood, group_parameters_info_10,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMCreplace_Breadth2_Depth_CCRF_CB_PE)
+# ========== 9. MBcache + CB + forgetR ================================
+name_9 = 'MBMCF_Breadth2_Depth_CCRF_CB'
+group_parameters_info_9 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]],
+    'forgetR':      ['gamma', [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgettingRoutesAndCache'
+build_model(name_9, likelihood, group_parameters_info_9,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMCF_Breadth2_Depth_CCRF_CB)
 
 
-# # ==========11. sequential-action-search variant ======================
-# name_11 = 'MBMCsequential_Breadth2_Depth_CCRF_CB'
-# group_parameters_info_11 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_sequentialactionsearch'
-# build_model(name_11, likelihood, group_parameters_info_11,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMCsequential_Breadth2_Depth_CCRF_CB)
+#==========10. cache replacement variant =============================
+name_10 = 'MBMCreplace_Breadth2_Depth_CCRF_CB_PE'
+group_parameters_info_10 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]],
+    'cache_plan':      ['gamma', [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_replacement_execution'
+build_model(name_10, likelihood, group_parameters_info_10,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMCreplace_Breadth2_Depth_CCRF_CB_PE)
 
-# # ==========11. sequential-action-search variant ======================
-# name_12 = 'MBMC_Breadth2_Depth_CB_MF'
-# group_parameters_info_11 = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-# 	'lr': ['beta',  [1, 1]],
-# 	'mf_beta': ['gamma',  [1, 1]]
-# }
-# likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_MF'
-# build_model(name_12, likelihood, group_parameters_info_11,
-#             number_subjects, parameter_sample_size)
-# all_models.append(MBMC_Breadth2_Depth_CB_MF)
+
+# ==========11. sequential-action-search variant ======================
+name_11 = 'MBMCsequential_Breadth2_Depth_CCRF_CB'
+group_parameters_info_11 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_sequentialactionsearch'
+build_model(name_11, likelihood, group_parameters_info_11,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMCsequential_Breadth2_Depth_CCRF_CB)
+
+# ==========11. sequential-action-search variant ======================
+name_12 = 'MBMC_Breadth2_Depth_CB_MF'
+group_parameters_info_11 = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+	'lr': ['beta',  [1, 1]],
+	'mf_beta': ['gamma',  [1, 1]]
+}
+likelihood = 'MB_Breadth_Depth_actionSeparation_MBcache_CB_forgetting_MF'
+build_model(name_12, likelihood, group_parameters_info_11,
+            number_subjects, parameter_sample_size)
+all_models.append(MBMC_Breadth2_Depth_CB_MF)
 
 # ==========11. sequential-action-search variant ======================
 name_12 = 'MBMC_Breadth2_Depth_MF'
@@ -7531,45 +7529,45 @@ build_model(name_12, likelihood, group_parameters_info_11,
             number_subjects, parameter_sample_size)
 all_models.append(MBMC_Breadth2_Depth_MF)
 
-# # ==========13. CacheR_CB (CB + cache + forgetting) ===================
-# # NOTE: ensure the four-parameter function is named uniquely
-# name_13 = 'CCRF_CB'
-# group_parameters_info_13 = {
-#     'CB':           ['norm',  [0, 5]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]]
-# }
-# likelihood = 'CacheR_CB'   # 4-parameter version
-# build_model(name_13, likelihood, group_parameters_info_13,
-#             number_subjects, parameter_sample_size)
-# all_models.append(CCRF_CB)
+# ==========13. CacheR_CB (CB + cache + forgetting) ===================
+# NOTE: ensure the four-parameter function is named uniquely
+name_13 = 'CCRF_CB'
+group_parameters_info_13 = {
+    'CB':           ['norm',  [0, 5]],
+    'mbcache':      ['gamma', [1, 1]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]]
+}
+likelihood = 'CacheR_CB'   # 4-parameter version
+build_model(name_13, likelihood, group_parameters_info_13,
+            number_subjects, parameter_sample_size)
+all_models.append(CCRF_CB)
 
 
-# # ==========14. CacheR_CB (cache only) ================================
-# # rename the 3-parameter function if needed
-# name_14 = 'CCRF'
-# group_parameters_info_14 = {
-#     'mbcache':      ['gamma', [1, 1]],
-#     'forgetC':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]]
-# }
-# likelihood = 'CacheR_CB'   # 3-parameter version
-# build_model(name_14, likelihood, group_parameters_info_14,
-#             number_subjects, parameter_sample_size)
-# all_models.append(CCRF)
+# ==========14. CacheR_CB (cache only) ================================
+# rename the 3-parameter function if needed
+name_14 = 'CCRF'
+group_parameters_info_14 = {
+    'mbcache':      ['gamma', [1, 1]],
+    'forgetC':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]]
+}
+likelihood = 'CacheR_CB'   # 3-parameter version
+build_model(name_14, likelihood, group_parameters_info_14,
+            number_subjects, parameter_sample_size)
+all_models.append(CCRF)
 
 
-# # ==========15. CacheR_CB (CB only baseline) ==========================
-# # rename the 1-parameter function if needed
-# name_15 = 'CB'
-# group_parameters_info_15 = {
-#     'CB': ['norm', [0, 5]]
-# }
-# likelihood = 'CacheR_CB'   # 1-parameter version
-# build_model(name_15, likelihood, group_parameters_info_15,
-#             number_subjects, parameter_sample_size)
-# all_models.append(CB)
+# ==========15. CacheR_CB (CB only baseline) ==========================
+# rename the 1-parameter function if needed
+name_15 = 'CB'
+group_parameters_info_15 = {
+    'CB': ['norm', [0, 5]]
+}
+likelihood = 'CacheR_CB'   # 1-parameter version
+build_model(name_15, likelihood, group_parameters_info_15,
+            number_subjects, parameter_sample_size)
+all_models.append(CB)
 
 # 
 ############################################################### FIT MODELS #############################################################
@@ -7681,31 +7679,32 @@ zero=[]
 one=[]
 two=[]
 
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+# save winning model
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# group_parameters_info_m = {
-#     'MB_B':         ['gamma', [1, 1]],
-#     'MB_depth':     ['beta',  [1, 1]],
-#     'MB_breadth':   ['beta',  [1, 1]],
-#     'breadth2':     ['beta',  [1, 1]],
-#     'mbcache':      ['gamma', [1, 1]],
-#     'CB':           ['norm',  [0, 5]],
-#     'forget':      ['gamma', [1, 1]],
-#     'cache_reward': ['norm',  [0, 5]],
-# 	'cache_plan': ['gamma',  [1, 1]]
-# }
+group_parameters_info_m = {
+    'MB_B':         ['gamma', [1, 1]],
+    'MB_depth':     ['beta',  [1, 1]],
+    'MB_breadth':   ['beta',  [1, 1]],
+    'breadth2':     ['beta',  [1, 1]],
+    'mbcache':      ['gamma', [1, 1]],
+    'CB':           ['norm',  [0, 5]],
+    'forget':      ['gamma', [1, 1]],
+    'cache_reward': ['norm',  [0, 5]],
+	'cache_plan': ['gamma',  [1, 1]]
+}
 
-# # with open('model_results.pkl', 'rb') as f:
-# #     models_Results_record = pickle.load(f)
-# d = pd.DataFrame()
-# current_results=models_Results_record['MBMC_Breadth2_Depth_CCRF_CB_PE']
-# counter=2
-# for key in group_parameters_info_m.keys():
-# 	group_parameters_info_m[key].append([])
-# 	for subject in range(number_subjects):
-# 		group_parameters_info_m[key][2].append(current_results[subject][counter][1])
-# 	counter+=1 
-# 	np.save('{}_exec'.format(key),group_parameters_info_m[key][2])
-# 	d['{}'.format(key)]=group_parameters_info_m[key][2]
+# with open('model_results.pkl', 'rb') as f:
+#     models_Results_record = pickle.load(f)
+d = pd.DataFrame()
+current_results=models_Results_record['MBMC_Breadth2_Depth_CCRF_CB_PE'] # winning model
+counter=2
+for key in group_parameters_info_m.keys():
+	group_parameters_info_m[key].append([])
+	for subject in range(number_subjects):
+		group_parameters_info_m[key][2].append(current_results[subject][counter][1])
+	counter+=1 
+	np.save('{}_exec'.format(key),group_parameters_info_m[key][2])
+	d['{}'.format(key)]=group_parameters_info_m[key][2]
 

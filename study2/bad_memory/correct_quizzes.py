@@ -48,11 +48,9 @@ for sub in subs:
         dest_path = os.path.join(parent_dir, sub)   # “…/sub”
         # move only if that name doesn’t already exist in the parent dir
         if not os.path.exists(dest_path):
-            shutil.move(sub, dest_path)
             print(f'moved GOOD sub → {dest_path}  ({pct_correct:.1%})')
         else:
             print(f'skipped {sub}: {dest_path} already exists')
-            shutil.move(sub, os.path.join(skipped_dir, sub))
     else:
         csv_lines.append([sub, pct_correct])
 

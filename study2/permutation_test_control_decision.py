@@ -49,11 +49,11 @@ for i in range(1000):
 		df = df[decision_answers]	# Shuffle each row
 
 		for idx, row in df.iterrows():
-		    df.loc[idx] = np.random.permutation(row)
+			df.loc[idx] = np.random.permutation(row)
 
 		# Shuffle each column
 		for col in df.columns:
-		    df[col] = np.random.permutation(df[col])
+			df[col] = np.random.permutation(df[col])
 	
 
 		df[trial_type]=plan_depth_col
