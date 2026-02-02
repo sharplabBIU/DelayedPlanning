@@ -1,6 +1,6 @@
-# Delayed Planning in Human Decision Making
+# Humans adaptively delay planning using cognitive maps
 
-Welcome to the companion repository for **“Delayed planning in human decision making”** by **Paul B. Sharp & Eran Eldar**. This repo contains the raw data, preprocessing pipelines, and analysis notebooks for the two behavioural experiments reported in the manuscript.
+Welcome to the companion repository for **“Humans adaptively delay planning using cognitive maps”** by **Paul B. Sharp & Eran Eldar**. This repo contains the raw data, preprocessing pipelines, and analysis notebooks for the two behavioural experiments reported in the manuscript.
 
 ---
 
