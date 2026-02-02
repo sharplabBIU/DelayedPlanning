@@ -35,7 +35,7 @@ decision_answers=['plan1_response.keys',
 'plan4_response.keys']
 
 for sub in subs:
-	df=pd.read_csv(sub)
+	df=pd.read_csv('data/{}'.format(sub))
 
 	counter=1
 	sum_pswq=0
@@ -82,7 +82,7 @@ for sub in subs:
 	
 		
 	trial_type='r2'
-	df=pd.read_csv(sub)
+	df=pd.read_csv('data/{}'.format(sub))
 
 	timepoints_short=[*range(num_decisions_to_consider)]
 	
