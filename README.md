@@ -1,6 +1,6 @@
 # Humans adaptively delay planning using cognitive maps
 
-Welcome to the companion repository for **“Humans adaptively delay planning using cognitive maps”** by **Paul B. Sharp & Eran Eldar**. This repo contains the raw data, preprocessing pipelines, and analysis notebooks for the two behavioural experiments reported in the manuscript.
+Welcome to the companion repository for **“Humans adaptively delay planning using cognitive maps”**. This repo contains the raw data, preprocessing pipelines, and analysis notebooks for the two behavioural experiments reported in the manuscript.
 
 ---
 
@@ -150,7 +150,7 @@ If you prefer **pip**, the same set of pinned versions is available in `requirem
 If you use this code or data, please cite:
 
 ```text
-Sharp, P. B. & Eldar, E. (2025). Delayed planning in human decision making. <Journal / preprint DOI>
+TBD
 ```
 
 ---
@@ -169,4 +169,4 @@ This project is licensed under the CC-BY-4.0 License – see `LICENSE` for detai
 
 ## 📧 Contact
 
-For questions, please contact **Paul B. Sharp** ([paul.sharp@biu.ac.il](mailto\:paul.sharp@biu.ac.il)) or open an issue on GitHub.
+For questions, please contact **XXX** or open an issue on GitHub.

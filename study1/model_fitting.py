@@ -1,7 +1,7 @@
 #!/usr/bin/env 
 # coding: utf-8
 
-# Scripts used to fit models to Multigoal RL task
+# Scripts used to fit models
 # Structure of meta script
 
 #    1. Likelihood functions
