@@ -1,0 +1,9 @@
+study,model,dBIC_vs_MBMC,dLogEvidence_vs_MBMC
+study1,CB,5253.4,-4558.5
+study1,MBMC,0.0,0.0
+study1,PR,1348.7,-2364.7
+study1,SR,589.7,-1985.2
+study2,CB,9532.7,-8152.2
+study2,MBMC,0.0,0.0
+study2,PR,2103.0,-4014.1
+study2,SR,1044.3,-3484.7

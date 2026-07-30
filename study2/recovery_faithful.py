@@ -1,0 +1,572 @@
+# Faithful simulator: planning-success drawn from the EXACT likelihood mixture
+# (categorical over {two-step, one-step, fail} with weights p1*p2, p1*(1-p1*p2), rest),
+# instead of two independent Bernoullis. Otherwise identical to the published simulator.
+import numpy as np
+from random import sample
+from scipy.special import softmax, expit
+from recovery_common import basename_without_ext
+
+def MF_faithful_simulate(parameters,df):
+	from scipy.special import comb
+	sim_data=[]
+	j=0
+	for i in range(len(parameters[0])):
+		for play in range(1):
+			data=df[i] # subject dataframe
+			subject=i+1
+			
+			np.seterr(divide='ignore')
+
+			# extract parameters
+			mb_control=parameters[0][i]
+			discount_rate = parameters[1][i]
+			mb_breadth =parameters[2][i]
+			mb_breadth2 = parameters[3][i]
+			mb_cache = parameters[4][i]
+			choice_bias = parameters[5][i]
+			
+			forgetting_cache = parameters[6][i]
+			
+			effect_reward = parameters[7][i]
+			cache_plan=parameters[8][i]
+
+		
+			mb_key = {
+				(3, 1, 'start'):           [1, 8], 
+				(3, 2, 'toothbrush'): [1,4], 
+				(3, 2, 'baby'):        [0,    0],
+				(3, 3, 'car'):        [1,2], 
+				(3, 3, 'backpack'):   [0,    0],
+				(3, 3, 'bowtie'):     [0,    0],
+				(2, 1, 'start'):           [2,8], 
+				(2, 2, 'toothbrush'): [1,4], 
+				(2, 2, 'baby'):        [1,4], 
+				(2, 3, 'backpack'):   [1,2], 
+				(2, 3, 'bowtie'):     [0,    0],
+				(2, 3, 'car'):        [0,    0],
+				(1, 1, 'start'):           [4,8], 
+				(1, 2, 'toothbrush'): [2,4], 
+				(1, 2, 'baby'):        [2,4], 
+				(1, 3, 'backpack'):   [1,2], 
+				(1, 3, 'bowtie'):     [1,2], 
+				(1, 3, 'car'):        [1,2], 
+			}
+			
+			mb_key2 = {
+				(3, 1, 'start'):           [0, 0],
+				(3, 2, 'toothbrush'): [0.0, 0],
+				(3, 2, 'baby'):        [0.0,    0],
+				(3, 3, 'car'):        [0.0,  0],
+				(3, 3, 'backpack'):   [0,    0],
+				(3, 3, 'bowtie'):     [0,    0],
+				(2, 1, 'start'):           [1,4], 
+				(2, 2, 'toothbrush'): [0.0, 0],
+				(2, 2, 'baby'):        [0.0, 0],
+				(2, 3, 'backpack'):   [0.0,  0],
+				(2, 3, 'bowtie'):     [0,    0],
+				(2, 3, 'car'):        [0,    0],
+				(1, 1, 'start'):           [2,4], 
+				(1, 2, 'toothbrush'): [1,2], 
+				(1, 2, 'baby'):        [1,2], 
+				(1, 3, 'backpack'):   [0,  0],
+				(1, 3, 'bowtie'):     [0,  0],
+				(1, 3, 'car'):        [0,  0],
+			}
+			optimal_key = {
+				(3, 1, 'start'):['toothbrush'],
+				(3, 2, 'toothbrush'): ['car'],
+				(3, 2, 'baby'):['backpack'],
+				(3, 3, 'car'):        [0,1],
+				(3, 3, 'backpack'):   [0,0],
+				(3, 3, 'bowtie'):     [0,1],
+				(2, 1, 'start'):['toothbrush','baby'],
+				(2, 2, 'toothbrush'): ['backpack'],
+				(2, 2, 'baby'): ['backpack'],
+				(2, 3, 'backpack'):   [0,1],
+				(2, 3, 'bowtie'):    [0,0],
+				(2, 3, 'car'):        [0,0],
+				(1, 1, 'start'):           ['toothbrush','baby'],
+				(1, 2, 'toothbrush'): ['backpack','bowtie','car'],
+				(1, 2, 'baby'):       ['backpack','bowtie','car'],
+				(1, 3, 'backpack'):  [0,1],
+				(1, 3, 'bowtie'):     [0,1],
+				(1, 3, 'car'):        [0,1],
+			}
+
+			cache_plans={(3, 1):np.zeros((2)),
+				(3, 2): np.zeros((2)),
+				(3, 3): np.zeros((2)),
+				(2, 1):np.zeros((2)), 
+				(2, 2):np.zeros((2)),
+				(2, 3): np.zeros((2)),
+			
+				(1, 1): np.zeros((2)), 
+				(1, 2): np.zeros((2)), 
+				(1, 3):   np.zeros((2))
+				}
+			keys = list(mb_key.keys())
+			learned_policy = {key: [0,0] for key in keys}
+			cached_policy = {key: [0,0] for key in keys}
+
+			choice_biases = {key: [0,0] for key in keys}
+			for key in keys:
+				choice_biases[key][0] = choice_bias
+			
+			transitions = {
+			'start': ['space','toothbrush', 'baby'],
+			'baby': ['space','bowtie','backpack'],
+			'toothbrush': ['space','backpack', 'car'],
+			'backpack': ['space','lamp', 'zebra'],
+			'bowtie': ['space','knight', 'lamp'],
+			'car': ['space','lamp', 'cat']}
+
+			keys_caching = {(*k, s): np.zeros((2))
+                  for k in keys
+                  for s in (0, 1)}
+
+
+			experiences_action1 = {key: 0 for key in keys}
+			experiences_action2 = {key: 0 for key in keys}
+			last_outcome_a1 = {key: 0 for key in keys}
+			last_outcome_a2 = {key: 0 for key in keys}
+
+			optimal_policy_1 = {key: [0,0] for key in keys}
+			
+
+			# MB key: base probabilities and initial experience (second element unused after vectorizing)
+			# MB key: base probabilities and initial experience (second element unused after vectorizing)
+				# MB key: base probabilities and initial experience (second element unused after vectorizing)
+				# ---------------------------------------------------------------------
+			# 1. helper -----------------------------------------------------------
+			# ---------------------------------------------------------------------
+
+			def update_probability_planning_success(num_successes, total, draws):
+				"""
+				Vectorised probability of obtaining ≥1 success after *draws*
+				(without replacement) from an urn with:
+					num_successes  – blue balls   (successes)
+					total          – total balls (N)
+
+				Parameters
+				----------
+				num_successes : int
+				total         : int
+				draws         : ndarray (float allowed; will be ceil-ed to int)
+
+				Returns
+				-------
+				p_success : ndarray of float, same shape as draws
+				"""
+				# d = np.ceil(draws).astype(int)              # round up partial draws
+				failures = total - num_successes            # red balls
+
+				p_no_success = 0
+
+				if draws <= failures:                        # comb() only defined here
+			
+					p_no_success= (
+						comb(failures, draws, exact=False) /
+						comb(total,    draws, exact=False))
+
+				# If draws exceed all red balls, probability of zero success is 0
+				return 1.0 - p_no_success
+	
+
+			def compute_mbmc_values_vectorized(key, mb_breadth_arr,mb_breadth_arr2, exp_arr,exp_arr2,last_choice_one,last_choice_two):
+				# change function so that it does all decision points at the same time.
+				num_success1, total1 = mb_key[key]
+				num_success2, total2 = mb_key2[key]
+
+				# -----------------------------------------------------------------
+				# update the running "experience" counters (= cumulative draws)
+				goal, decision, _ = key
+				if num_success1 > 0:
+					exp_arr  += mb_breadth_arr     # add breadth this visit
+				if num_success2 > 0:
+					exp_arr2 += mb_breadth_arr2
+
+				# -----------------------------------------------------------------
+				# NEW: exact success probabilities with the threshold property
+				
+
+
+				if total1 > 0 and num_success1 > 0:
+					p_one = update_probability_planning_success(num_success1, total1, exp_arr)
+				else:
+					p_one = np.zeros_like(exp_arr)
+
+				if total2 > 0 and num_success2 > 0:
+					p_two = update_probability_planning_success(num_success2, total2, exp_arr2)
+
+				else:
+					p_two = np.zeros_like(exp_arr2)
+
+				p_one = min(p_one,1.0)
+				p_two = min(p_two,1.0)
+				w_two = p_one*p_two
+				w_one = p_one*(1.0-w_two)
+				w_fail = max(0.0, 1.0-w_one-w_two)
+				
+
+
+				# value arrays
+				v_take = 0
+				v_rel  = 0
+			
+
+
+				
+				_scn = np.random.choice([2,1,0], p=[w_two, w_one, w_fail])
+				Two_Succeeded = int(_scn==2)
+				One_Succeeded = int(_scn==1)
+				Succeed=1 #assume planning success unless failure
+				if not One_Succeeded:
+					if not Two_Succeeded:
+						Succeed=0 #failure
+					
+	
+
+
+
+				if goal == 3:
+					if One_Succeeded:
+						v_take  = 4*(discount_rate**(3-decision)); 
+						v_rel  = 1
+					else:
+						v_rel   = 1
+
+				elif goal == 2:
+					if decision == 1:
+						if Two_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision))
+							v_rel  = 1+4*(discount_rate**(3-decision))
+						elif One_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision)); 
+							v_rel  = 1
+						else:
+							v_rel   = 1
+
+					else:
+						
+						if One_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision)); 
+							v_rel  = 1
+						else:
+							v_rel   = 1
+
+
+				elif goal == 1:
+					if decision < 3:
+						if Two_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision))
+							v_rel  = 1+4*(discount_rate**(3-decision))
+						elif One_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision)); 
+							v_rel  = 1
+						else:
+							v_rel   = 1
+
+						
+					else:
+						if One_Succeeded:
+							v_take  = 4*(discount_rate**(3-decision)); 
+							v_rel  = 1
+						else:
+							v_rel   = 1
+
+				return v_take, v_rel, exp_arr,exp_arr2,Two_Succeeded+(1-One_Succeeded),last_choice_two,Succeed
+			
+			def push_recent_key(recent_keys, key):
+				"""
+				Move `key` to the end of `recent_keys` (newest position).
+				Ensures each key appears at most once.
+				"""
+				try:
+					recent_keys.remove(key)   # O(N) but N is small in WM context
+				except ValueError:
+					pass                      # key not yet in list
+				recent_keys.append(key)       # newest item is last
+				return recent_keys
+			
+			# loop over trials
+			trials = np.sort(data['trial_num'].unique())
+			recent_keys1=[]
+			recent_keys2=[]
+			recent_keys3=[]
+			
+			for trial in trials:
+				df_temp = data[data['trial_num'] == trial].reset_index(drop=True)
+				RT = df_temp['RT'].values
+				planning_depth_val = int(df_temp['planning_depth'].values[0])
+				current_states_orig = df_temp['current_state'].values
+				trial_goal=df_temp['trial_num_within_goal'].values[0]
+				# reward from subsequent choices (as in original)
+				last_key=(planning_depth_val, 1, current_states_orig[0])
+				last_outcome_a1[last_key]=0
+				last_outcome_a2[last_key]=0
+				imm_rewards=0
+				orig_goal_outcome=df_temp['got_to_goal'].values[0]
+				actions={'a1':0,'a2':0,'a3':0}
+				keys_recent=[]
+				current_state='start'
+				match_state=0
+				for decision in (1, 2, 3):
+					j+=1
+
+					sim_data.append({
+						'sub':subject,
+						'goal':planning_depth_val,
+						'trial_num_within_goal':trial_goal,
+						'trial_num':trial,
+						'trial':trial_goal,
+						'current_state':current_state,
+						'planning_depth':planning_depth_val,
+						'decision':decision
+						})
+
+					key = (planning_depth_val, decision, current_state)
+					key_plan = (planning_depth_val, decision)
+					keys_recent.append(key)
+					# vectorized MBMC computation
+					
+					vt, vr, experiences_action1[key],experiences_action2[key],la1,la2,plan_success = \
+						compute_mbmc_values_vectorized(key,mb_breadth,mb_breadth2,experiences_action1[key],experiences_action2[key],last_outcome_a1[last_key],last_outcome_a2[last_key])
+					
+					last_key=key
+					last_outcome_a1[last_key]=la1
+					last_outcome_a2[last_key]=la2
+					
+					optimal_policy_1[key]    = [vt, vr]
+				
+					# integrated Q-values
+					Q_both = np.multiply(optimal_policy_1[key],mb_control) \
+							+ choice_biases[key] \
+							+ cached_policy[key] \
+							+ cache_plans[key_plan]
+					#update learned policy
+					
+					action_probs = softmax(Q_both)
+					chosen_action = np.random.choice([0,1], p=action_probs)
+					
+					act=chosen_action
+
+					keya = (planning_depth_val, decision, current_state,act)
+					if decision==1:
+						recent_keys1=push_recent_key(recent_keys1,keya)
+					elif decision==2:
+						recent_keys2=push_recent_key(recent_keys2,keya)
+					elif decision==3:
+						recent_keys3=push_recent_key(recent_keys3,keya)
+					
+					if plan_success:
+						success_plan=True
+					else:
+						success_plan=False
+
+					if decision<3:
+						if act==1:
+							imm_rewards+=1
+							# give-up-control: the computer's random transition is
+							# pre-drawn in the template, so the agent ends up in the
+							# actually-experienced state; if a successful plan moved
+							# the agent off the template path, draw fresh instead
+							# (following an off-path template state would bias the
+							# transition distribution)
+							if (basename_without_ext(current_states_orig[decision-1])==current_state
+									and basename_without_ext(current_states_orig[decision]) in transitions[current_state][1:3]):
+								current_state=basename_without_ext(current_states_orig[decision])
+							else:
+								current_state=sample(transitions[current_state][1:3],1)[0]
+						else:
+							if success_plan:
+								# optimal next states restricted to the task graph
+								opts=[s for s in optimal_key[key] if s in transitions[current_state][1:3]]
+								current_state=sample(opts,1)[0]
+							else:
+								current_state=sample(transitions[current_state][1:3],1)[0]
+
+					if decision==3:
+						if 1 in optimal_key[key]:	
+							goal_outcome=1
+						else:
+							goal_outcome=0
+						
+
+
+						# if current_state==basename_without_ext(current_states_orig[2]):
+						# 	goal_outcome=orig_goal_outcome
+						# else:
+						
+
+					actions['a{}'.format(decision)]=act
+					if decision<3:
+						key_plan_next = (planning_depth_val, decision+1)
+						if act==0:
+							cache_plans[key_plan_next][0]=cache_plan
+						else:
+							cache_plans[key_plan_next][0]=0
+
+					
+
+					
+					# 'choice_numeric':act,
+					# 	'control choice':(chosen_action-1)*-1,
+					sim_data[j-1]['choice_numeric']=act
+					sim_data[j-1]['control choice']=(chosen_action-1)*-1
+					
+				act1=recent_keys1[-1][-1]
+				act2=recent_keys2[-1][-1]
+				act3=recent_keys3[-1][-1]
+				key1=recent_keys1[-1][:-1]
+				key2=recent_keys2[-1][:-1]
+				key3=recent_keys3[-1][:-1]
+				for i in range(3):
+					sim_data[j-3+i]['got_to_goal']=goal_outcome
+				if goal_outcome==0:
+					goal_outcome=-1
+
+				cached_policy[key1][act1]=mb_cache+effect_reward*goal_outcome
+				cached_policy[key2][act2]=mb_cache+effect_reward*goal_outcome
+				cached_policy[key3][act3]=mb_cache+effect_reward*goal_outcome
+				
+				# Recency index: 0 = newest, 1 = 2nd-newest, …
+				rec_idx = {k: r for r, k in enumerate(reversed(recent_keys1))}
+				far = len(recent_keys1) + 1      # “never seen” sentinel
+
+				rec_idx2 = {k: r for r, k in enumerate(reversed(recent_keys2))}
+				far2 = len(recent_keys2) + 1      # “never seen” sentinel
+
+				rec_idx3 = {k: r for r, k in enumerate(reversed(recent_keys3))}
+				far3 = len(recent_keys3) + 1      # “never seen” sentinel
+
+				for key in keys_caching.keys():
+					reduced_key=key[:-1]
+					action=key[3]
+					if key[1]==1:
+						rec = rec_idx.get(key, far)               # scalar
+						decay = np.exp(-forgetting_cache * rec)         # shape (S,)
+						cached_policy[reduced_key][action] *= decay
+					elif key[1]==2:
+						rec = rec_idx2.get(key, far2)               # scalar
+						decay = np.exp(-forgetting_cache * rec)         # shape (S,)
+						cached_policy[reduced_key][action] *= decay
+					elif key[1]==3:
+						rec = rec_idx3.get(key, far3)               # scalar
+						decay = np.exp(-forgetting_cache * rec)         # shape (S,)
+						cached_policy[reduced_key][action]       *= decay		
+
+			
+
+	return sim_data
+	
+	# mb_control=parameters[0][i]
+	# 		discount_rate = parameters[1][i]
+	# 		mb_breadth =parameters[2][i]
+	# 		choice_bias = parameters[3][i]
+	# 		mb_breadth2 = parameters[4][i]
+	# 		caching_wins = parameters[5][i]
+	# 		cache_beta = parameters[6][i]
+	# 		caching_wins = parameters[7][i]
+	# 		caching_wins = parameters[8][i]
+
+
+
+# MB_model = np.load('MB_B_exec.npy')
+# MB_depth = np.load('MB_depth_exec.npy')
+# MB_breadth2 = np.load('breadth2_exec.npy') * 4
+# MB_breadth1 = np.load('MB_breadth_exec.npy') * 8
+# cb = np.load('cb_exec.npy')
+# forgetting_cache = np.load('forget_exec.npy')
+# caching_rwd = np.load('mbcache_exec.npy')
+# caching_no_rwd = np.load('cache_reward_exec.npy')
+# plan_exec = np.load('cache_plan_exec.npy')
+
+# parameter_list=[MB_model,MB_depth,MB_breadth1,MB_breadth2,caching_rwd,cb,forgetting_cache,caching_no_rwd,plan_exec]
+# df=pd.read_csv('lmm_fixed.csv')
+# dfs=[df[df['sub']==sub].reset_index(drop=True) for sub in pd.read_csv('lmm_fixed.csv')['sub'].unique()]
+# print(len(dfs))
+# sub_ID_names=[x['sub'][10] for x in dfs]
+# subj_dfs=dfs
+
+# sim_data=MF_ChoiceBias_MB_Breadth_Depth_simulate(parameter_list,subj_dfs)
+
+# sim_df = pd.DataFrame(sim_data)
+# sim_df.to_csv('simulated_data.csv')
+# # sim_df=pd.read_csv('simulated_data.csv')
+
+
+# # # ################### PLOTTTING ###############################################
+# # sim_df.to_csv('simulated_data.csv', index=False)
+# sns.set(style='white', font_scale=2.5, palette='Set2')
+# custom_palette1 = [ (0.5208627450980392, 0.6399215686274509, 0.602392156862745),
+# 				  (0.460070588235294, 0.7007137254901961, 0.6248588235294118),
+# 				  (0.4, 0.7607843137254902, 0.6470588235294118)]
+# custom_palette2 = [  (0.785921568627451, 0.6422745098039215, 0.5866274509803922),
+# (0.8876823529411766, 0.5973411764705883, 0.48486666666666656),
+# (0.9882352941176471, 0.5529411764705883, 0.3843137254901961)]
+# custom_palette3 = [
+# 				  (0.6343921568627452, 0.6589803921568628, 0.7146274509803922),
+# (0.5934235294117648, 0.643121568627451, 0.7555960784313726),
+# (0.5529411764705883, 0.6274509803921569, 0.796078431372549)]
+# # Plot the lines on two facets
+# ax=sns.lmplot(
+# 	data=sim_df[sim_df['planning_depth']==1],
+# 	x="trial", y="control choice",scatter=False,
+# 	hue="decision", palette=custom_palette1,logistic=True,legend=False)
+
+# for axs in ax.axes.flat: 
+# 	axs.set_xticks([1, 5, 10, 15, 20]) 
+# 	axs.set_yticks([0,0.5,1])
+# plt.savefig('controlTaking_by_time_depth1_SIM_BFP.png', dpi=300,bbox_inches='tight')
+
+# plt.show()
+
+# # Plot the lines on two facets
+# ax=sns.lmplot(
+# 	data=sim_df[sim_df['planning_depth']==2],
+# 	x="trial", y="control choice",logistic=True,scatter=False,
+# 	hue="decision", palette=custom_palette2,legend=False)
+
+# for axs in ax.axes.flat: 
+# 	axs.set_xticks([1, 5, 10, 15, 20])
+# 	axs.set_yticks([0,0.5,1])
+# plt.savefig('controlTaking_by_time_depth2_SIM_BFP.png', dpi=300,bbox_inches='tight')
+
+# plt.show()
+
+# # Plot the lines on two facets
+# ax=sns.lmplot(
+# 	data=sim_df[sim_df['planning_depth']==3],
+# 	x="trial", y="control choice",logistic=True,scatter=False,
+# 	hue="decision", palette=custom_palette3,legend=False)
+
+# for axs in ax.axes.flat: 
+# 	axs.set_xticks([1, 5, 10, 15, 20])
+# 	axs.set_yticks([0,0.5,1])
+# plt.savefig('controlTaking_by_time_depth3_SIM_BFP.png', dpi=300,bbox_inches='tight')
+
+# plt.show()
+
+
+# # Plot mean control taken over trials
+# sim_df['planning depth']=sim_df['planning_depth']
+# ax = sns.barplot(x="planning depth", y="control choice", hue="decision",data=sim_df)
+# for bar_group, desaturate_value in zip(ax.containers, [0.33,0.667,1]):
+# 		for bar, color in zip(bar_group, plt.cm.Set2.colors):
+# 			bar.set_facecolor(sns.desaturate(color, desaturate_value))
+# labels=[bar_group.get_label() for bar_group in ax.containers]
+# ax.legend(handles=[tuple(bar_group) for bar_group in ax.containers],loc='lower left',
+# 	labels=['decision=1' if '0' in x else 'decision=2' if '1' in x else 'decision=3' for x in labels],
+# 	prop={'size': 14},
+# 	handlelength=9, handler_map={tuple: HandlerTuple(ndivide=None, pad=0.1)})
+
+
+# plt.yticks([0,0.5,1])
+
+# # Saving the plot
+# plt.tight_layout()
+# plt.savefig('MODELsimulated_BestFittingParams_optimal_Control_by_planningdepth.png', dpi=300)
+# plt.show()
+
+
+
