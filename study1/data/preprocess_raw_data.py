@@ -19,7 +19,7 @@ reverse_counters=[1,3,8,10,11]
 
 reverse_dict={1:5,2:4,3:3,4:2,5:1}
 
-subs=[x for x in os.listdir(os.curdir) if x.startswith('5') or x.startswith('6') ]
+subs=[x for x in os.listdir(os.curdir) if x.startswith('sub-') ]
 
 timepoints_tracker=[['1']*num_decisions_to_consider+['2']*num_decisions_to_consider+['3']*num_decisions_to_consider]*3*len(subs)
 timepoints_tracker=list(itertools.chain.from_iterable(timepoints_tracker))
@@ -142,7 +142,7 @@ prev_trial_nonconsecutive = {sub: {'cat': {1: False, 2: False, 3: False},
 								'lamp': {1: False, 2: False, 3: False},
 								'zebra': {1: False, 2: False, 3: False}} for sub in subs}
 trial_type='r2'
-# x=['55d22025cc2b18000c0b9d9c_thisExp_2023-05-28_10h07.02.505.csv']
+# x=['sub-003.csv']
 for sub in subs:
 	print('{} csv file is sub NUM : {}'.format(sub,sub_num))
 

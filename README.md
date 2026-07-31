@@ -213,9 +213,11 @@ dependencies:
 
 ## 📝 Data Description
 
-- **File format:** `.csv`, one file per participant/session in `study*/data/`
+- **File format:** `.csv`, one file per participant/session in `study*/data/`, anonymized as `sub-XXX.csv` (no recruitment-platform identifiers are included anywhere in the repository)
 - **Contents:** trial-level records of choices, reaction times, task state variables, and feedback
 - The preprocessing scripts standardize variable names, remove practice trials, and output tidy data frames (`preprocessed_data.csv`, `lmm_fixed.csv`) ready for analysis.
+- **Full column-level documentation:** see [`data_dictionary.md`](./data_dictionary.md).
+- **Materials:** the task implementation and stimulus assets are in [`study2/task/`](./study2/task/) (both studies used this task; Study 2 additionally showed quiz feedback during training).
 
 ## 📑 Preregistrations
 

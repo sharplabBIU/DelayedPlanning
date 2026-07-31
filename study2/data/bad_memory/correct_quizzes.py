@@ -15,7 +15,7 @@ n_questions    = 16                   # denominator for the percentage
 parent_dir     = os.pardir            # one level up ("..")
 
 # current working directory is assumed to contain the raw subject files
-subs = [x for x in os.listdir('.') if x.startswith(('5', '6'))]
+subs = [x for x in os.listdir('.') if x.startswith('sub-')]
 
 csv_lines = [['sub', 'percent_correct']]
 bad_memory_dir = 'bad_memory'         # still produced for the “bad” list
