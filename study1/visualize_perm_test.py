@@ -9,7 +9,8 @@ import itertools
 sns.set_context("talk", font_scale=2.8)
 
 # Additional Code for Plotting
-critical_values = {'depth=1': np.log(15), 'depth=2': np.log(19.59), 'depth=3': np.log(41.72)}
+_act = pd.read_csv('permutations_optimal_score_ACTUALSUBS.csv').iloc[0]   # actual mean optimal trials per participant (same scoring as the null)
+critical_values = {'depth=1': np.log(_act['depth1_score']), 'depth=2': np.log(_act['depth2_score']), 'depth=3': np.log(_act['depth3_score'])}
 print(critical_values)
 
 # Convert the results to a DataFrame for plotting

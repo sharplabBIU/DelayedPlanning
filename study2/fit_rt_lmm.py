@@ -65,13 +65,6 @@ control_effect = df['control_regressor'].values.astype(float)
 interaction = delayed_planning * trial_num_v
 n = len(subs)
 
-def ranef(name, noncentered):
-    sigma = pm.HalfNormal(f'sigma_{name}', 2)
-    if noncentered:
-        z = pm.Normal(f'z_{name}', 0, 1, shape=n)
-        return pm.Deterministic(name, sigma * z)
-    return pm.Normal(name, mu=0, sigma=sigma, shape=n)
-
 with pm.Model():
     intercept = pm.Normal('intercept', 0, 2)
     coef_delayed_planning = pm.Normal('coef_delayed_planning', 0, 2)
@@ -81,14 +74,12 @@ with pm.Model():
     coef_planning_depth = pm.Normal('coef_planning_depth', 0, 2)
     coef_c = pm.Normal('coef_c', 0, 2)
     coef_interaction = pm.Normal('coef_interaction', 0, 2)
-    # participant-level random effects (names as in the published traces)
-    intercept_sub = ranef('intercept_sub', a.noncentered) if not a.noncentered else None
+    # participant-level random effects (variable names as in the published traces)
+    sigma_sub = pm.HalfNormal('sigma_sub', 2)
     if a.noncentered:
-        sigma_sub = pm.HalfNormal('sigma_sub', 2); z0 = pm.Normal('z_intercept_sub', 0, 1, shape=n)
-        intercept_sub = pm.Deterministic('intercept_sub', sigma_sub * z0)
+        z0 = pm.Normal('z_intercept_sub', 0, 1, shape=n); intercept_sub = pm.Deterministic('intercept_sub', sigma_sub * z0)
     else:
-        sigma_sub = pm.HalfNormal('sigma_sub', 2); intercept_sub = pm.Normal('intercept_sub', mu=0, sigma=sigma_sub, shape=n)
-    slope_sub_dp = ranef('slope_sub_dp', a.noncentered) if False else None
+        intercept_sub = pm.Normal('intercept_sub', mu=0, sigma=sigma_sub, shape=n)
     def slope(name):
         sigma = pm.HalfNormal(f'sigma_{name.replace("slope_sub_", "slope_")}', 2)
         if a.noncentered:

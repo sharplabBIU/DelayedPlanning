@@ -107,7 +107,8 @@ import itertools
 
 results_df=pd.read_csv('permutations_optimal_score.csv')
 # Additional Code for Plotting
-critical_values = {'depth1': 15, 'depth2': 19.59, 'depth3': 41.72}
+_act = pd.read_csv('permutations_optimal_score_ACTUALSUBS.csv').iloc[0]
+critical_values = {'depth1': _act['depth1_score'], 'depth2': _act['depth2_score'], 'depth3': _act['depth3_score']}
 # Convert the results to a DataFrame for plotting
 # results_df = pd.DataFrame(csv_lines[1:], columns=['depth3_score', 'depth2_score', 'depth1_score'])
 results_df = pd.melt(results_df, var_name='planning_depth', value_name='score')

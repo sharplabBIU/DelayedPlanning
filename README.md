@@ -26,9 +26,11 @@ Planning is computationally costly. In multi-step problems it is often more effi
 ├── README.md, data_dictionary.md    ← this file; column-level documentation of every data file
 ├── environment.yml                  ← conda environment used for the reproducibility check (Python 3.13, PyMC 5.22)
 ├── CITATION.cff, .zenodo.json       ← citation metadata for the Zenodo archive
-├── study1/                          ← Experiment 1 (N = 101 recruited, 93 retained)
-│   ├── data/                        ← anonymised raw PsychoPy session files (sub-XXX.csv) + preprocess_raw_data.py, correct_quizzes.py
-│   │   └── bad_memory/              ← sessions excluded for failing the memory quizzes
+├── study1/                          ← Experiment 1 (83 participants analysed; 10 pre-registration pilot sessions archived)
+│   ├── data/                        ← anonymised raw PsychoPy session files (sub-XXX.csv) + preprocess_raw_data.py, correct_quizzes.py,
+│   │   │                               route_quiz_accuracy.py, permutation_test_control_decision.py
+│   │   ├── bad_memory/              ← sessions excluded for failing the memory quizzes
+│   │   └── pilot_preregistration/   ← ten pilot sessions collected before the preregistration (excluded from all analyses)
 │   ├── analysis.ipynb               ← behavioural notebook (Fig. 2 panels, quiz accuracy, RT model posterior summaries, Supp. Fig. S1)
 │   ├── make_lmm_fixed.py, fit_rt_lmm.py, lmm_posterior_correlations.py   ← design matrix → RT mixed model → reported correlations
 │   └── *.py, *.csv, *.nc, *.npy, *.png   ← scripts, derived data, posterior trace, simulation inputs, figure panels (inventory below)
@@ -76,21 +78,21 @@ All commands are run from the folder named in the first column. Every step can a
 | Step | Folder | Command | Output → used by | Runtime |
 |---|---|---|---|---|
 | 1 Preprocess raw data | `study1/data`, `study2/data` | `python preprocess_raw_data.py` | `../preprocessed_data.csv` (tidy decision-level data) | seconds |
-| 2 Memory-quiz scoring | `study1/data`, `study2/data` | `python correct_quizzes.py` (exclusion; already applied) ; `python route_quiz_accuracy.py` (accuracy of every participant) | `memory_accuracies_subjects_orig_fulltrajectories.csv` (failing sessions only, moved to `bad_memory/`); `route_quiz_accuracy_all.csv` | seconds |
+| 2 Memory-quiz scoring | `study1/data`, `study2/data` | `python correct_quizzes.py` (exclusion; already applied) ; `python route_quiz_accuracy.py` (accuracy of every participant) | `memory_accuracies_subjects_orig_fulltrajectories.csv` (failing sessions only, moved to `bad_memory/`); `route_quiz_accuracy_all.csv` (Study 1 Results: mean 97.8%, mode 100%) | seconds |
 | 3 Design matrix | `study1`, `study2` | `python make_lmm_fixed.py` (`--overwrite` to replace `lmm_fixed.csv`) | `lmm_fixed.csv` (regressors for the RT model, model fits and behavioural analyses) | 10 s |
 | 4 Demographics | `study1`, `study2/demographics` | `python demographics_analyze.py` | Methods: 51% male, 39.98 y (S1); 50.9% male, 37.90 y (S2) | seconds |
 | 5 Adaptive-control score | `study1`, `study2` | `python optimal_delayed_score.py` | `optimal_delayed_scores.csv` (Fig. 2C top-decile definition) | seconds |
-| 6 Permutation test | `study1` | `python permutation_test_and_visualize.py`, `python visualize_perm_test.py` | Fig. 2B right (`permTest_Visualized.png`); reads the stored permutations `permutations_optimal_score*.csv` (re-create with `study2/permutation_test_control_decision.py`) | seconds (≈ 1 h to re-permute) |
-| 7 RT mixed model | `study1`, `study2` | `python fit_rt_lmm.py` (writes `*_refit.nc`; `--noncentered` option) or notebook cell "RT model" | `RTdata_model_fitted_withintrial*.nc` → Fig. 2D/2E, Results (βRT mode 0.32 [0.21, 0.43]; interaction 0.21 [0.11, 0.33]) | 10–35 min per study |
-| 8 Posterior summaries & correlations | `study1`, `study2` | `python lmm_posterior_correlations.py` ; notebook cells 21–22 (S1) / 17 (S2) | Results: r = 0.84 and r = −0.35 (Pearson, Study 1); posterior modes/HDIs | seconds |
+| 6 Permutation test | `study1/data`, then `study1` | `python permutation_test_control_decision.py` (1,000 seeded permutations) ; `python visualize_perm_test.py` | `permutations_optimal_score.csv`, `permutations_optimal_score_ACTUALSUBS.csv`, `permutation_test_pvalues.csv` (all depths p < 0.001); Fig. 2B right (`permTest_Visualized.png`, dashed lines at the actual scores) | seconds |
+| 7 RT mixed model | `study1`, `study2` | `python fit_rt_lmm.py` (writes `*_refit.nc`; `--noncentered` option) or notebook cell "RT model" | `RTdata_model_fitted_withintrial*.nc` → Fig. 2D/2E, Results (Study 1: βRT mode 0.29 [0.18, 0.41]; interaction 0.22 [0.10, 0.34]) | 15–35 min per study |
+| 8 Posterior summaries & correlations | `study1`, `study2` | `python lmm_posterior_correlations.py` ; notebook cells 21–22 (S1) / 17 (S2) | Results: r = 0.83 and r = −0.35 (Pearson, Study 1); posterior modes/HDIs | seconds |
 | 9 Half-split analyses | `study2` | `python pct_halfsplit_decile.py`, `python abs_halfsplit_decile.py` | all top-decile vs bottom-90% values in Results (both studies) | seconds |
 | 10 Behavioural figures | `study1`, `study2` | `jupyter nbconvert --to notebook --execute analysis.ipynb --ExecutePreprocessor.kernel_name=delayed-planning` | Fig. 2/3B panels (PNG files listed below); see "Notebook cell map" | 2–3 min (sampling cells excluded) |
-| 11 Model fits (winning soft-gated MBMC) | `study2` | `python gatedsoft_run_all.py` (Study 2 fit + recovery + Fig. 3B simulation); `python fit_study1_softgate.py` (Study 1) | `em_params_study{1,2}_MBMCgatedsoft.npy`, `simulated_data_gatedsoft.csv`, Fig. 3B simulated panels | hours each |
+| 11 Model fits (winning soft-gated MBMC) | `study2` | `python gatedsoft_run_all.py` (Study 2 fit + recovery + Fig. 3B simulation); `python fit_study1_softgate.py` (Study 1 fit + parameter–RT correlations) | `em_params_study{1,2}_MBMCgatedsoft.npy`, `simulated_data_gatedsoft.csv`, Fig. 3B simulated panels | EM fit ≈ 1 min per study (importance sampler not bit-reproducible: medians vary by ≈ 0.05 between runs); recovery/simulation longer |
 | 12 Model comparison | `study2` | `python softgate_model_comparison.py` (`--smoke` for a quick run) ; `python softgate_extra_variants.py` | `softgate_model_comparison_BICs.csv` (Fig. 3A right, all in-text ΔBICs), `softgate_extra_variants_BICs.csv` | hours |
-| 13 Parameter summaries & Fig. 3C | `study2` | `python summarize_softgate_params.py`, `python fig3c_softgate.py` | Supp. Tables S3–S4, Fig. S7 (`em_params_*_median_iqr.csv`); Fig. 3C panels and ρ values | seconds |
+| 13 Parameter summaries, Fig. S7 & Fig. 3C | `study2` | `python summarize_softgate_params.py`, `python plot_softgate_params_barplots.py`, `python fig3c_softgate.py` | Supp. Tables S3–S4 (`em_params_*_median_iqr.csv`), Supp. Fig. S7 (`cbm_MBMCgatedsoft_params_EM_barplots.png`); Fig. 3C panels and ρ values | seconds |
 | 14 Recovery analyses | `study2`, `model_fitting_revision` | `python faithful_recovery_softgate.py` (Fig. 3A left); `python recovery_softgate_big.py` (Supp. Fig. S5); `python model_recovery_softgate_reps.py` (Supp. Fig. S4) | `faithful_recovery_softgate_corr.csv`, `recovery_softgate_big_corr.csv`, `results/model_recovery_softgate_reps_confusion.csv` | hours / 15 min / ≈ 6 h |
 | 15 Decision-time analyses | `study2` | `python mbmc_rollout_rt_softgate.py` (Supp. Fig. S2), `python rt_lmm_simulated_softgate.py` (Supp. Fig. S6), `python rollout_rt_proxy.py` | `mbmc_simulated_RT_softgate_mean_study2.*`, `rt_lmm_simulated_softgate_*` | minutes / 5 min / minutes |
-| 16 SR/PR competitors, V-relinquish variant | `model_fitting_revision` | `python run_map.py study1`, `python run_map.py study2`; `python fit_relinquish_variant.py` | `cbm_response_summary.csv` (Supp. Fig. S3), `results/relinquish_variant_ibic_study2.csv` | minutes |
+| 16 SR/PR competitors, V-relinquish variant | `study2`, then `model_fitting_revision` | `python fit_original_model_warmstart.py study1` (per-subject EM warm start, `study1/*_exec.npy`); `python run_map.py study1`, `python run_map.py study2`; then `python make_notebook.py` and execute `cbm_model_fitting_r1.ipynb`; `python fit_relinquish_variant.py` | `cbm_response_summary.csv` and `cbm_deltaBIC_vs_MBMC.png` (Supp. Fig. S3: Study 1 ΔBIC SR 513.0, PR 1143.9, CB 4345.8), `results/relinquish_variant_ibic_study2.csv` | 3–10 min per study |
 
 ### 3. Notebook cell map (`analysis.ipynb`)
 
@@ -99,11 +101,13 @@ Both notebooks run top-to-bottom in the environment above with the kernel `delay
 | Notebook | Cells | Produces | Status |
 |---|---|---|---|
 | `study1/analysis.ipynb` | 1 | derived columns (identical to `make_lmm_fixed.py`), merge of quiz accuracy | runs |
-| | 3–7, 9–13 | Fig. 2A–C, 2E-left panels (`optimal_control*.png`, `controlTaking_by_time*.png`, `variability_*.png`, `optimal_planning_RTs*.png`, `RTs_by_time.png`, `optimalDelayed_by_time.png`, …) | runs (cell 11 fails with seaborn ≥ 0.13 on a legend call; the panels it draws are also saved by cells 9–10) |
+| | 4 | Fig. 2A (`total_score_plot.png`, `optimal_action_choice.png`, `optimal_metacontrol_choice.png`) and Fig. 2B-middle (`optimal_controlactualparticipantsempiricaldata.png`) | runs |
+| | 5, 6, 9, 10, 13 | Fig. 2B-left (`simulated_optimal_Control_by_planningdepth.png`), Fig. 2C (`variability_metacontrol_kde.png`, `variability_control_taking.png`, `optimal_controlactualparticipantsempiricaldata_{low,high}_performers.png`), Fig. 2E-middle (`optimal_RT_overtime_scatter.png`), faceted RT panels | run |
+| | 11 | Fig. 2D-left (`optimal_planning_RTs.png`), RT over trials (`RTs_by_time_withOUT_inset.png`), Fig. 2E-left (`controlTaking_by_time_depth{1,2,3}.png`) | runs (patched for seaborn ≥ 0.13: only bar containers are recoloured/legended) |
 | | 8 | Supp. Fig. S1 cost–benefit agent simulation (`simulation_with_metaplanning.png`) | runs |
 | | 14–17 | logistic model of control choices over time (`choicedata_model_fitted_best.nc`) | *legacy* — not reported; the trace is not archived |
-| | 20–22 | RT mixed model (`pm.sample`, ≈ 30 min) → `RTdata_model_fitted_withintrial.nc`; posterior summaries; Fig. 2D-right/2E-right (`posterior_delayed_planning_reaction*.png`) | runs; cell 22 prints the reported values exactly (0.32 [0.21, 0.43]; 0.21 [0.11, 0.33]) |
-| | 24 | correlations between participant-level RT effects and behaviour (Spearman, Bonferroni-corrected) and original-model parameter plots | runs; **the Results report the Pearson correlations** (r = 0.84, −0.35), reproduced by `lmm_posterior_correlations.py` |
+| | 20–22 | RT mixed model (`pm.sample`, ≈ 15 min) → `RTdata_model_fitted_withintrial.nc`; posterior summaries; Fig. 2D-right/2E-right (`posterior_distributions.png`) | runs; cell 22 prints the reported values exactly (0.29 [0.18, 0.41]; 0.22 [0.10, 0.34]) |
+| | 24 | correlations between participant-level RT effects and behaviour (Spearman, Bonferroni-corrected) and original-model parameter plots (`*_exec.npy`) | runs; **the Results report the Pearson correlations** (r = 0.83, −0.35), reproduced by `lmm_posterior_correlations.py` |
 | `study2/analysis.ipynb` | 1–5, 8–10, 12–13 | derived columns; Fig. 3B empirical panels (`optimal_control.png`, `optimal_RT_by_planningdepth.png`, `variability_metacontrol.png`, stay plots) | run |
 | | 15 | stay-plot of model-simulated data (reads `simulated_data_gatedsoft.csv`) | runs |
 | | 16–18 | RT mixed model (`pm.sample`, target_accept 0.80) → `RTdata_model_fitted_withintrial2.nc`; summaries | run |
@@ -117,13 +121,13 @@ Both notebooks run top-to-bottom in the environment above with the kernel `delay
 
 | Result | Code | Key outputs |
 |---|---|---|
-| Fig. 2 behavioural panels, Supp. Fig. S1 | `study1/analysis.ipynb` | `study1/*.png`, `study1/simulation_with_metaplanning.png`, `study1/Figures_Final.pdf` |
-| Route-quiz accuracy of retained participants (Results: mean 98.7%, mode 100%) | `study{1,2}/data/route_quiz_accuracy.py` (scoring rule of `correct_quizzes.py`) | `study{1,2}/data/route_quiz_accuracy_all.csv` |
-| Permutation test of adaptive control (Fig. 2B right) | `study1/permutation_test_and_visualize.py`, `study1/visualize_perm_test.py`, `study2/permutation_test_control_decision.py` | `study1/permutations_optimal_score*.csv`, `permTest_Visualized.png` |
+| Fig. 2 behavioural panels, Supp. Fig. S1 | `study1/analysis.ipynb` (cell map above) | `study1/*.png`, `study1/simulation_with_metaplanning.png` (`Figures_Final.pdf` is the assembled figure file) |
+| Route-quiz accuracy of retained participants (Results: mean 97.8%, mode 100%) | `study{1,2}/data/route_quiz_accuracy.py` (scoring rule of `correct_quizzes.py`) | `study{1,2}/data/route_quiz_accuracy_all.csv` |
+| Permutation test of adaptive control (Fig. 2B right; each p < 0.001) | `study1/data/permutation_test_control_decision.py`, `study1/visualize_perm_test.py` (`permutation_test_and_visualize.py` is the older plotting variant) | `study1/permutations_optimal_score*.csv`, `permutation_test_pvalues.csv`, `permTest_Visualized.png` |
 | Adaptively delayed control score (top-decile definition, Fig. 2C) | `study{1,2}/optimal_delayed_score.py` | `optimal_delayed_scores.csv` |
-| Exclusion-criterion check (r = 0.14, p = 0.17) | Pearson correlation of `optimal_delayed_score` and `percent_correct` in `study1/optimal_delayed_scores.csv` | — |
+| Exclusion-criterion check (r = 0.24, p = 0.03) | Pearson correlation of `optimal_delayed_score` and `percent_correct` (from `data/route_quiz_accuracy_all.csv`) in `study1/optimal_delayed_scores.csv` | — |
 | Hierarchical Bayesian RT mixed model (Fig. 2D/2E) | `study{1,2}/make_lmm_fixed.py` → `study{1,2}/fit_rt_lmm.py` (or notebook cell "RT model") | `lmm_fixed.csv`; `study1/RTdata_model_fitted_withintrial.nc`, `study2/RTdata_model_fitted_withintrial2.nc` |
-| βRT random effect vs control-choice accuracy (r = 0.84); interaction vs adaptively delayed control (r = −0.35) | `study1/lmm_posterior_correlations.py` | printed |
+| βRT random effect vs control-choice accuracy (r = 0.83); interaction vs adaptively delayed control (r = −0.35) | `study1/lmm_posterior_correlations.py` | printed |
 | Top decile vs bottom 90% (overall levels, relative and absolute change; both studies) | `study2/pct_halfsplit_decile.py`, `study2/abs_halfsplit_decile.py` | printed stats reported in Results |
 | Demographics (Methods) | `study1/demographics_analyze.py`, `study2/demographics/demographics_analyze.py` | `study1/study1_demographics.csv`, `study2/demographics/study2_demographics.csv` |
 
@@ -139,7 +143,7 @@ Both notebooks run top-to-bottom in the environment above with the kernel `delay
 | Parameter recovery at best-fit params (Fig. 3A left, mean r = 0.68) | `study2/faithful_recovery_softgate.py` | `faithful_recovery_softgate_corr.csv`, `_heatmap.png` |
 | Model recapitulates behaviour (Fig. 3B bottom row) | `study2/gatedsoft_run_all.py` (simulation block) | `simulated_data_gatedsoft.csv`, `MODELsimulated_GATEDSOFT_*.png`, `stayPlot_SIM_GATEDSOFT.png` |
 | Parameter–RT correlations (Fig. 3C: ρ = 0.63, −0.39, 0.34, −0.23, −0.04) | `study2/fig3c_softgate.py` | `study2/*_softgate.png` panels |
-| Fitted parameters: Supp. Tables S3–S4, Supp. Fig. S7 | `study2/summarize_softgate_params.py` | `em_params_study{1,2}_median_iqr.csv`, `cbm_MBMCgatedsoft_params_EM_barplots.png` |
+| Fitted parameters: Supp. Tables S3–S4, Supp. Fig. S7 | `study2/summarize_softgate_params.py`, `study2/plot_softgate_params_barplots.py` | `em_params_study{1,2}_median_iqr.csv`, `cbm_MBMCgatedsoft_params_EM_barplots.png` |
 
 ### Supplemental analyses
 
@@ -148,7 +152,7 @@ Both notebooks run top-to-bottom in the environment above with the kernel `delay
 | Fig. S1 cost–benefit agent simulation | `study1/analysis.ipynb` (cell 8) | `study1/simulation_with_metaplanning.png` |
 | Fig. S2 model-derived decision time (rollouts; caption parameter means 1.24, 0.67, 0.48, 0.20, 0.26) | `study2/mbmc_rollout_rt_softgate.py` (+ `mbmc_rollout_rt_median.py`) | `mbmc_simulated_RT_softgate_mean_study2.png/.csv` |
 | Rollout RT proxy vs. empirical RT | `study{1,2}/rollout_rt_proxy.py` | `rollout_rt_proxy_*.csv` |
-| Fig. S3 SR/PR meta-controllers | `model_fitting_revision/` (`cbm_models.py`, `mfit_models.py`, `run_map.py`; see its README) | `cbm_deltaBIC_vs_MBMC.png`, `cbm_response_summary.csv`, `results/` |
+| Fig. S3 SR/PR meta-controllers (Study 1 ΔBIC: SR 513.0, PR 1143.9, CB 4345.8; Study 2: 1044.3, 2103.0, 9532.7) | `study2/fit_original_model_warmstart.py` → `model_fitting_revision/run_map.py` → `make_notebook.py` + `cbm_model_fitting_r1.ipynb` (see its README) | `cbm_deltaBIC_vs_MBMC.png`, `cbm_response_summary.csv`, `results/` |
 | Fig. S4 model recovery (13 soft-gated models) | `model_fitting_revision/model_recovery_softgate_reps.py` | `model_recovery_softgate_reps_study2.png`, `results/model_recovery_softgate_reps_confusion.csv` |
 | Fig. S5 parameter recovery, wide priors (Table S2 = `GROUND_TRUTH` in `recovery_parameter.py`) | `study2/recovery_softgate_big.py` | `recovery_softgate_big_corr.csv`, `_heatmap.png` |
 | Fig. S6 simulated delayed-planning RT signature (LMM on model-generated RTs; interaction 0.46 [0.38, 0.53]) | `study2/rt_lmm_simulated_softgate.py` | `rt_lmm_simulated_softgate_posterior.png`, `_trace.nc` |
@@ -169,39 +173,44 @@ Row-order note: the shipped `lmm_fixed.csv` files preserve the participant order
 
 ---
 
-## Independent reproducibility check (7 Oct 2026)
+## Independent reproducibility check and Study 1 reanalysis (7 Oct 2026)
 
-Performed on a different computer from the original analyses (Apple Silicon Mac, macOS 27, 18 cores), in a fresh conda environment created from `environment.yml`, from a clean clone of the repository. **(re-run)** = executed end-to-end from the files in this repository and compared with the reported value; **(stored)** = committed output compared with the reported value because a full re-run takes hours (script and inputs present).
+Performed on a different computer from the original analyses (Apple Silicon Mac, macOS 27, 18 cores), in a fresh conda environment created from `environment.yml`, from a clean clone of the repository. The check first reproduced the analyses of the submitted manuscript (N = 93), then found that ten Study 1 sessions (4–5 August 2022) had been collected and analysed before the Study 1 preregistration of 26 May 2023 (they are the "pilot data (n = 10)" attached to the registration). These sessions were moved to `study1/data/pilot_preregistration/` and **every Study 1 analysis was recomputed on the 83 post-registration participants**; the values below are the reanalysed ones that the manuscript now reports. A complete before/after comparison of every statistic and figure panel accompanies the manuscript (`Study1_pilot_exclusion_comparison.pdf`). Study 2 is unaffected: all 257 of its sessions started on 24–25 June 2024, after its registration of 18 June 2024.
 
-| Paper claim | Reported | Reproduced | How |
+**(re-run)** = executed end-to-end from the files in this repository; **(stored)** = committed output checked against the manuscript because a full re-run takes hours (script and inputs present).
+
+| Manuscript value | Reported (reanalysed) | Reproduced | How |
 |---|---|---|---|
-| Raw → tidy data (both studies) | — | `preprocessed_data.csv` regenerated **byte-identical** for Study 1 (16,740 rows) and Study 2 (29,340 rows) | re-run (`preprocess_raw_data.py`) |
-| Tidy → design matrix | — | `lmm_fixed.csv` regenerated with identical values (Study 2 all columns; Study 1 all but the unused `MB_decision`) | re-run (`make_lmm_fixed.py`) |
-| Demographics S1 (51% male, age 39.98) | 51%, 39.98 | 51.00%, 39.98 | re-run |
+| Raw → tidy data (both studies) | — | `preprocessed_data.csv` regenerated from the raw files (Study 1: 14,940 rows / 83 participants; Study 2: 29,340 rows, byte-identical to the previous file) | re-run (`preprocess_raw_data.py`) |
+| Tidy → design matrix | — | `lmm_fixed.csv` regenerated (Study 1 with `--overwrite`; Study 2 identical values, see row-order note) | re-run (`make_lmm_fixed.py`) |
+| Demographics S1 (51% male, age 39.98) | 51%, 39.98 | 51.00%, 39.98 (export does not contain the pilot participants) | re-run |
 | Demographics S2 (50.9% male, age 37.90) | 50.9%, 37.90 | 50.92%, 37.90 | re-run |
-| Exclusion-criterion correlation | r = 0.14, p = 0.17 | r = 0.145, p = 0.166 | re-run |
-| Route-quiz accuracy (Results, Study 1) | mean 98.7%, mode 100% | **mode 100% reproduced; mean not reproduced exactly**: 97.9% with the scoring rule of `data/correct_quizzes.py` (`data/route_quiz_accuracy.py`), 98.1% from the `percent_correct` column shipped in `optimal_delayed_scores.csv` — flagged to the authors | re-run |
-| Adaptive-control scores (Fig. 2C) | — | `optimal_delayed_scores.csv` reproduced (max abs. diff 3 × 10⁻¹⁰) | re-run |
-| Permutation test (each depth) | p < 0.001 | p < 10⁻⁴ all depths | re-run from stored permutations |
-| Study 1 RT model delayed-planning effect | mode 0.32, HDI [0.21, 0.43] | 0.32 [0.21, 0.43] (notebook cell 22) | re-run from stored trace |
-| Study 1 delayed-planning × trial interaction | mode 0.21, HDI [0.11, 0.33] | 0.21 [0.11, 0.33] | re-run from stored trace |
+| Study 1 retained participants | 83 | 83 session files in `study1/data/` | re-run |
+| Route-quiz accuracy (Study 1) | mean 97.8%, mode 100% | 97.8%, 100% | re-run (`route_quiz_accuracy.py`) |
+| Exclusion-criterion correlation (Study 1) | r = 0.24, p = 0.03 | r = 0.238, p = 0.030 | re-run |
+| Permutation test (each depth) | p < 0.001 | p < 0.001 at every depth (actual 13.75 / 6.17 / 4.66 vs null maxima 11.02 / 2.25 / 1.30) | re-run (`permutation_test_control_decision.py`, 1,000 seeded permutations) |
+| Study 1 RT model delayed-planning effect | mode 0.29, HDI [0.18, 0.41] | 0.293 [0.181, 0.414] (notebook cell 22 and `fit_rt_lmm.py`) | re-run (refit, 4 chains) |
+| Study 1 delayed-planning × trial interaction | mode 0.22, HDI [0.10, 0.34] | 0.215 [0.095, 0.336] | re-run |
 | Study 2 RT model (replication) | "replicated" | 0.37 [0.29, 0.44]; interaction 0.24 [0.16, 0.33] | re-run from stored trace |
-| βRT random effect vs control-choice accuracy | r = 0.84 | Pearson r = 0.843 (Spearman 0.74) — Study 1 | re-run (`lmm_posterior_correlations.py`) |
-| Interaction vs adaptively delayed control | r = −0.35 | Pearson r = −0.352 (Spearman −0.27) — Study 1 | re-run |
-| Half-split overall levels / relative / absolute change (both studies) | all Results values | exact match (0.71 vs 0.11; 0.96 vs 0.06; +41% [17, 70] vs +218% [100, 534], p = 0.0004; +21% [5, 45] vs +486%, p = 0.095; +0.24 [0.11, 0.37] vs +0.11 [0.07, 0.16], p = 0.077; +0.18 [0.05, 0.32] vs +0.09 [0.03, 0.15], p = 0.23) | re-run |
-| Model-comparison BIC ladder (baseline BIC + 8 in-text ΔBICs) | 26984.25; 2276.45, 2313.87, 262.44, 1038.62, 261.56, 689.25; MF 437.92; V-relinquish +2 | all exact; +1.7 | stored (`softgate_model_comparison_BICs.csv`, `softgate_extra_variants_BICs.csv`, `relinquish_variant_ibic_study2.csv`); `softgate_model_comparison.py --smoke` re-run (23 s) confirms the pipeline executes |
-| Fig. 3C correlations | ρ = 0.63, −0.39, −0.23, −0.04 (and βMBMC vs βRT) | 0.630, −0.386, −0.228, −0.044 (0.340) | re-run (`fig3c_softgate.py`) |
+| βRT random effect vs control-choice accuracy (Study 1) | r = 0.83 | Pearson r = 0.827 (Spearman 0.71) | re-run (`lmm_posterior_correlations.py`) |
+| Interaction vs adaptively delayed control (Study 1) | r = −0.35, p = 0.001 | Pearson r = −0.354, p = 0.0010 | re-run |
+| Top decile vs bottom 90% (both studies) | all Results values | exact match (Study 1: 0.79 vs 0.04, p < 0.001; absolute +0.16 [−0.00, +0.32] vs +0.09 [+0.03, +0.15], p = 0.44; Study 2 unchanged) | re-run (`pct/abs_halfsplit_decile.py`) |
+| Fig. 2C mean proportion of optimal control choices | 0.70 | 0.705 | re-run (notebook cell 9) |
+| Model-comparison BIC ladder (Study 2; baseline BIC + 8 in-text ΔBICs) | 26984.25; 2276.45, 2313.87, 262.44, 1038.62, 261.56, 689.25; MF 437.92; V-relinquish +2 | all exact; +1.7 | stored (`softgate_model_comparison_BICs.csv`, `softgate_extra_variants_BICs.csv`, `relinquish_variant_ibic_study2.csv`); `softgate_model_comparison.py --smoke` re-run (23 s) confirms the pipeline executes |
+| Fig. 3C correlations (Study 2) | ρ = 0.63, −0.39, −0.23, −0.04 (and βMBMC vs βRT) | 0.630, −0.386, −0.228, −0.044 (0.340) | re-run (`fig3c_softgate.py`) |
+| Study 1 model fit and parameter–RT correlations ("all results held") | same winning model; b̃2 vs βRT | EM refit (`fit_study1_softgate.py`): b̃2 vs βRT ρ = 0.50 (p_Bonf = 3.5 × 10⁻⁵), βMBMC vs βRT ρ = 0.36 (p_Bonf = 0.017) | re-run |
 | Fig. 3A-left faithful recovery | mean r = 0.68 | 0.677 | stored (refit ≈ hours) |
-| Supp. Tables S3/S4 medians + IQRs | all 36 values | exact from `em_params_*_MBMCgatedsoft.npy` | re-run (`summarize_softgate_params.py`) |
-| Supp. Fig. S2 caption parameter means | 1.24, 0.67, 0.48, 0.20, 0.26 | 1.241, 0.671, 0.485, 0.199, 0.259 | re-run from stored fits |
+| Supp. Tables S3/S4 medians + IQRs | Study 1 values updated (see `em_params_study1_median_iqr.csv`); Study 2 unchanged | Study 1 medians 1.12, 0.72, 0.57, 0.14, 2.39, 0.44, 0.052, 0.85, 1.61; Study 2 exact | re-run (`summarize_softgate_params.py`; the EM importance sampler is not bit-reproducible, medians vary by ≈ 0.05 between runs) |
+| Supp. Fig. S2 caption parameter means (Study 2) | 1.24, 0.67, 0.48, 0.20, 0.26 | 1.241, 0.671, 0.485, 0.199, 0.259 | re-run from stored fits |
+| Supp. Fig. S3 SR/PR/CB ΔBIC | Study 1: 513.0 / 1143.9 / 4345.8; Study 2: 1044.3 / 2103.0 / 9532.7 | exact (`cbm_response_summary.csv`) | re-run for Study 1 (`fit_original_model_warmstart.py` → `run_map.py` → notebook); stored for Study 2 |
 | Supp. Fig. S4 model recovery | full model 0.95; 12/13 ≥ 0.90; 9 perfect; MBMC_BD 0 | exact | stored (re-run ≈ 6 h) |
-| Supp. Fig. S5 wide-prior recovery (N = 1000 synthetic participants) | heatmap diagonal (mean r = 0.61) | stochastic re-run (8 min, 16 cores): mean r = 0.60, every parameter within 0.07 of the shipped value (`recovery_softgate_big_corr.csv`) | re-run |
+| Supp. Fig. S5 wide-prior recovery (N = 1000 synthetic participants) | heatmap diagonal (mean r = 0.61) | stochastic re-run (8 min, 16 cores): mean r = 0.60, every parameter within 0.07 of the shipped value | re-run |
 | Supp. Fig. S6 simulated interaction | mean 0.46, HDI [0.38, 0.53] | 0.456 [0.383, 0.527] | re-run from stored trace |
-| SR/PR ΔBIC (Supp. Fig. S3) | 589.7 / 1044.3 (SR), 1348.7 / 2103.0 (PR) | exact | stored (`cbm_response_summary.csv`) |
+| Supp. Fig. S7 fitted-parameter barplots | regenerated | `plot_softgate_params_barplots.py` | re-run |
 
-**Corrections made to the manuscript as a result of this check** (tracked changes in the resubmitted manuscript): the RT models were sampled with **four** NUTS chains (not two) and Study 2 used `target_accept = 0.80`; R̂ ≤ 1.01 holds for every population-level coefficient, but the standard deviations of the near-zero random slopes (goal switch, DelayedPlan × Trial; control state in Study 2) have R̂ = 1.12–1.65 and low ESS, so the Methods now state this; the correlations r = 0.84 and r = −0.35 are Pearson correlations computed on Study 1. A non-centred refit of both models (`fit_rt_lmm.py --noncentered --target-accept 0.99`, 4 chains) converges (all R̂ ≤ 1.02, no divergences) with identical population-level estimates (Study 1: 0.32 [0.22, 0.44] and 0.22 [0.11, 0.34]; Study 2: 0.36 [0.29, 0.44] and 0.25 [0.16, 0.32]); see `ROBUSTNESS_RESULTS.md`.
+**Corrections made to the manuscript as a result of this check** (tracked changes in the resubmitted manuscript): the RT models were sampled with **four** NUTS chains (not two) and Study 2 used `target_accept = 0.80`; R̂ ≤ 1.01 holds for every population-level coefficient, but the standard deviations of the near-zero random slopes (goal switch, DelayedPlan × Trial; control state in Study 2) have R̂ = 1.18–1.65 and low ESS, so the Methods now state this; the correlations r = 0.83 and r = −0.35 are Pearson correlations computed on Study 1. A non-centred refit of both models (`fit_rt_lmm.py --noncentered --target-accept 0.99`, 4 chains) converges (all R̂ ≤ 1.02, no divergences) with identical population-level estimates; see `ROBUSTNESS_RESULTS.md`. The previously reported route-quiz accuracy (98.7%) and Fig. 2C caption value (0.67) could not be reproduced from the archived files for either sample and were replaced by the values the archived scripts produce (97.8%; 0.70). The published Fig. 2B-right panel drew its dashed lines at hard-coded values three times the stored actual scores; the regenerated panel uses the actual scores.
 
-Not independently re-derived here (script and data present; expected runtimes above): the EM model fits themselves, the full 13-model comparison refit, the Fig. 3A faithful recovery, the Supp. Fig. S4 model recovery, and the empirical RT-model sampling itself (the stored traces were used; `fit_rt_lmm.py` refits them).
+Not independently re-derived here (script and data present; expected runtimes above): the Study 2 EM model fit, the full 13-model comparison refit, the Fig. 3A faithful recovery, the Supp. Fig. S4 model recovery, and the Study 2 RT-model sampling itself (the stored trace was used; `fit_rt_lmm.py` refits it).
 
 ---
 
@@ -220,7 +229,7 @@ Supplementary Table S5 of the manuscript reports deviations from the preregistra
 
 ## Data description and anonymisation
 
-- **Raw data:** one PsychoPy session file per participant in `study*/data/` (`sub-XXX.csv`), containing the complete trial-by-trial record of training, memory quizzes, planning phase and questionnaires (PsychoPy `thisExp` export convention). `study*/data/bad_memory/` holds sessions excluded for failing the memory quizzes; `study2/data/` also contains incomplete sessions that were never analysed.
+- **Raw data:** one PsychoPy session file per participant in `study*/data/` (`sub-XXX.csv`), containing the complete trial-by-trial record of training, memory quizzes, planning phase and questionnaires (PsychoPy `thisExp` export convention). `study*/data/bad_memory/` holds sessions excluded for failing the memory quizzes; `study2/data/` also contains incomplete sessions that were never analysed; `study1/data/pilot_preregistration/` holds the ten pre-registration pilot sessions, which are excluded from all analyses.
 - **Anonymisation:** all platform identifiers (`PROLIFIC_PID`, `STUDY_ID`, `SESSION_ID`) and the free-text `participant` field are replaced by the anonymised code or `REDACTED`; file names carry only the anonymised code; no names, e-mail addresses, IP addresses, dates of birth or web identifiers are present. Demographics files contain age and sex only. The code ↔ identifier mapping is held offline by the authors.
 - **Derived data:** `preprocessed_data.csv` (tidy decision-level data) and `lmm_fixed.csv` (plus derived regressors) per study; fitted parameters (`.npy`), posterior traces (`.nc`) and comparison outputs (`.csv`).
 - **Full column-level documentation:** [`data_dictionary.md`](./data_dictionary.md).
@@ -231,7 +240,7 @@ The complete task implementation (PsychoPy Builder file, PsychoJS web export, Py
 
 ## Preregistrations and deviations
 
-- Study 1: https://doi.org/10.17605/OSF.IO/QS9JA — registered 26 May 2023 after a pilot sample of 10 participants (sessions of 4–5 August 2022; `sub-009, -048, -049, -054, -055, -058, -061, -064, -071, -073`) had been collected and analysed (the pilot analyses are attached to the registration); the remaining participants were collected on 26–29 May 2023 and the pilot participants are included in the Study 1 sample.
+- Study 1: https://doi.org/10.17605/OSF.IO/QS9JA — registered 26 May 2023, prior to collection of the analysed sample (26–29 May 2023). A separate pilot sample of 10 participants (sessions of 4–5 August 2022) had been collected and analysed before the registration (its analyses are attached to the registration); those sessions are archived in `study1/data/pilot_preregistration/` and excluded from every analysis.
 - Study 2: https://doi.org/10.17605/OSF.IO/5Y9Z6 — registered 18 June 2024, before data collection (24–25 June 2024).
 - All deviations from the preregistrations, with their justification and robustness checks, are listed in Supplementary Table S5 of the manuscript (Psychological Science deviation-table template).
 
@@ -246,21 +255,21 @@ The complete task implementation (PsychoPy Builder file, PsychoJS web export, Py
 ### `study1/` (Experiment 1)
 | File | Description |
 |---|---|
-| `data/` | Raw PsychoPy session .csv per participant (`sub-XXX.csv`), `preprocess_raw_data.py` (raw → tidy), `correct_quizzes.py` (quiz-based exclusion), `route_quiz_accuracy.py` + `route_quiz_accuracy_all.csv` (route-quiz accuracy of every participant), `bad_memory/` |
+| `data/` | Raw PsychoPy session .csv per participant (`sub-XXX.csv`), `preprocess_raw_data.py` (raw → tidy), `correct_quizzes.py` (quiz-based exclusion), `route_quiz_accuracy.py` + `route_quiz_accuracy_all.csv` (route-quiz accuracy of every participant), `permutation_test_control_decision.py` (Fig. 2B permutation test), `bad_memory/`, `pilot_preregistration/` (ten pre-registration pilot sessions, excluded) |
 | `analysis.ipynb` | Main notebook: Fig. 2 panels, quiz accuracy, RT model fit and posterior summaries, Supp. Fig. S1 simulation |
 | `make_lmm_fixed.py`, `fit_rt_lmm.py`, `lmm_posterior_correlations.py` | Design matrix; RT mixed model (standalone, with non-centred option); reported correlations |
 | `preprocessed_data.csv`, `lmm_fixed.csv` | Tidy decision-level data; design matrix |
 | `RTdata_model_fitted_withintrial.nc` | Posterior trace of the hierarchical RT model (Fig. 2D/2E stats) |
-| `permutation_test_and_visualize.py`, `visualize_perm_test.py`, `permutationTest_notebook.ipynb` | Permutation test of adaptive control (Fig. 2B right) |
-| `permutations_optimal_score.csv`, `permutations_optimal_score_ACTUALSUBS.csv` | Permuted and actual optimal-control scores |
+| `visualize_perm_test.py`, `permutation_test_and_visualize.py`, `permutationTest_notebook.ipynb` | Plotting of the permutation test (Fig. 2B right); the permutations themselves come from `data/permutation_test_control_decision.py` |
+| `permutations_optimal_score.csv`, `permutations_optimal_score_ACTUALSUBS.csv`, `permutation_test_pvalues.csv` | Permuted and actual optimal-control scores; one-sided p-values |
 | `optimal_delayed_score.py`, `optimal_delayed_scores.csv` | Per-participant adaptively-delayed-control score (top-decile definition) |
 | `demographics_analyze.py`, `study1_demographics.csv` | Methods demographics |
 | `memory_accuracies_subjects_orig_fulltrajectories.csv` | Output of `data/correct_quizzes.py` (lists only sessions that failed the cutoff; header-only in Study 1 because the failing sessions had already been moved) |
 | `rollout_rt_proxy.py`, `rollout_rt_proxy_*.csv` | Model-derived decision-time proxy vs empirical RT (Study 1) |
-| `CB_exec.npy`, `MB_*.npy`, `breadth2_exec.npy`, `cache_*.npy`, `forget_exec.npy`, `mbcache_exec.npy` | Parameters of the original (pre-revision) model, loaded by legacy notebook cells |
+| `CB_exec.npy`, `MB_*.npy`, `breadth2_exec.npy`, `cache_*.npy`, `forget_exec.npy`, `mbcache_exec.npy` | Per-participant EM parameters of the original (pre-revision) model (`study2/fit_original_model_warmstart.py`): warm start of `model_fitting_revision/run_map.py` and inputs of notebook cell 24 |
 | `Figures_Final.pdf` | Assembled final figures |
 | `simulation_with_metaplanning.png` | Supp. Fig. S1 |
-| `permTest_Visualized.png`, `optimal_planning_RTs*.png`, `posterior_*.png`, `controlTaking_by_time*.png`, `optimalDelayed_by_time.png`, `optimal_RT_overtime.png`, `RTs_by_time.png`, `optimal_control*.png`, `optimal_action_choice.png`, `optimal_metacontrol_choice.png`, `correct_control_action.png`, `total_score_plot.png`, `variability_*.png`, `simulated_optimal_Control_by_planningdepth.png`, `optimal_controlactualparticipantsempiricaldata*.png` | Fig. 2 panel images (regenerated by `analysis.ipynb`) |
+| `total_score_plot.png`, `optimal_action_choice.png`, `optimal_metacontrol_choice.png` (Fig. 2A); `simulated_optimal_Control_by_planningdepth.png`, `optimal_controlactualparticipantsempiricaldata.png`, `permTest_Visualized.png` (Fig. 2B); `variability_metacontrol_kde.png`, `variability_control_taking.png`, `optimal_controlactualparticipantsempiricaldata_{low,high}_performers.png` (Fig. 2C); `optimal_planning_RTs.png`, `posterior_distributions.png` (Fig. 2D); `controlTaking_by_time_depth{1,2,3}.png`, `optimal_RT_overtime_scatter.png` (Fig. 2E); `RTs_by_time_withOUT_inset.png`, `RTs_D1_removed_secondhalf.png`, `Faceted_*.png`, `meta_action_reinforcement_all.png`, `*_RTMAIN.png`, `MB_BothAction_RTinteraction.png`, `param_effects_corr_heatmap.png` (further notebook panels) | Fig. 2 panel images, all regenerated by `analysis.ipynb` on the 83-participant sample |
 
 ### `study2/` (Experiment 2)
 | File | Description |
@@ -279,9 +288,9 @@ The complete task implementation (PsychoPy Builder file, PsychoJS web export, Py
 | `recovery_common.py`, `recovery_em.py`, `recovery_faithful.py`, `recovery_likelihoods.py` | EM / iterative importance-sampling machinery and the 13-model likelihood library |
 | `mfit_softgate_gen.py` | Auto-generated soft-gated likelihoods (regenerated by `softgate_model_comparison.py`) |
 | `gatedsoft_run_all.py`, `fit_study1_softgate.py` | EM fits of the winning model (Study 2 incl. recovery + Fig. 3B simulation; Study 1) |
-| `fit_real_em.py`, `em_params_study{1,2}_MBMC.npy` | Original-model EM fit (reference; superseded) |
+| `fit_real_em.py`, `fit_original_model_warmstart.py`, `em_params_study{1,2}_MBMC.npy` | Original-model EM fits (reference; `fit_original_model_warmstart.py` regenerates one study's per-participant parameters and the `study*/*_exec.npy` warm-start files) |
 | `em_params_study{1,2}_MBMCgatedsoft.npy` | **Fitted parameters (winning model), native space** — source of Tables S3/S4, Fig. S7, Fig. S2 caption |
-| `summarize_softgate_params.py`, `em_params_study{1,2}_median_iqr.csv` | Medians/IQRs for Supp. Tables S3–S4 |
+| `summarize_softgate_params.py`, `plot_softgate_params_barplots.py`, `em_params_study{1,2}_median_iqr.csv` | Medians/IQRs for Supp. Tables S3–S4; Supp. Fig. S7 |
 | `softgate_model_comparison.py`, `softgate_model_comparison_BICs.csv`, `softgate_model_comparison_figure.png` | 13-model iBIC comparison (Fig. 3A right + in-text ΔBICs) |
 | `softgate_extra_variants.py`, `softgate_extra_variants_BICs.csv` | MF learner and with-replacement variants |
 | `faithful_recovery_softgate.py`, `faithful_recovery_softgate_corr.csv`, `_heatmap.png` | Fig. 3A-left parameter recovery |

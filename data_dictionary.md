@@ -4,7 +4,7 @@ This document describes the data files shared in this repository (STAR item 8.5)
 
 ## Anonymization
 
-All participant identifiers have been removed. Session files are named `sub-001.csv`, `sub-002.csv`, … (per study), and the same codes are used in the `sub` column of every derived file (as `sub-XXX.csv`). Inside the raw files, the recruitment-platform identifiers (`PROLIFIC_PID`, `STUDY_ID`, `SESSION_ID`) are set to the anonymised code or to `REDACTED`, and the free-text `participant` field (which some participants filled with initials, a first name or their platform ID) has been replaced by the anonymised code in every file. The only remaining session metadata are the PsychoPy session timestamp (`date`), operating system (`OS`) and PsychoPy version. `study{1,2}/data/bad_memory/` contains sessions excluded for failing the memory quizzes; `study2/data` additionally contains incomplete sessions that were never analysed. The demographics files contain only age and sex (Prolific export columns `Status`, `Age`, `Sex`; rows without a `sub` code are returned/unmatched submissions). The mapping between anonymised codes and platform identifiers is held offline by the authors and is not shared.
+All participant identifiers have been removed. Session files are named `sub-001.csv`, `sub-002.csv`, … (per study), and the same codes are used in the `sub` column of every derived file (as `sub-XXX.csv`). Inside the raw files, the recruitment-platform identifiers (`PROLIFIC_PID`, `STUDY_ID`, `SESSION_ID`) are set to the anonymised code or to `REDACTED`, and the free-text `participant` field (which some participants filled with initials, a first name or their platform ID) has been replaced by the anonymised code in every file. The only remaining session metadata are the PsychoPy session timestamp (`date`), operating system (`OS`) and PsychoPy version. `study{1,2}/data/bad_memory/` contains sessions excluded for failing the memory quizzes; `study2/data` additionally contains incomplete sessions that were never analysed. `study1/data/pilot_preregistration/` holds the ten pilot sessions collected in August 2022, before Study 1 was preregistered; they were analysed for the registration's preliminary results and are excluded from every analysis in the manuscript (the preprocessing script only reads the parent folder). The demographics files contain only age and sex (Prolific export columns `Status`, `Age`, `Sex`; rows without a `sub` code are returned/unmatched submissions). The mapping between anonymised codes and platform identifiers is held offline by the authors and is not shared.
 
 ## Raw data (`study{1,2}/data/*.csv`)
 
@@ -12,7 +12,7 @@ One PsychoPy session file per participant, containing the complete trial-by-tria
 
 ## `study{1,2}/preprocessed_data.csv`
 
-Tidy planning-phase data: one row per decision (3 decisions × 60 trials per participant).
+Tidy planning-phase data: one row per decision (3 decisions × 60 trials per participant; Study 1 N = 83, Study 2 N = 163).
 
 | Column | Description |
 |---|---|
