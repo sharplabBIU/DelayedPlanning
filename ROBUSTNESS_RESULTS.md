@@ -44,10 +44,10 @@ Addresses the poor mixing of the near-zero random-slope standard deviations in t
 
 | Study | DelayedPlan (βRT) | DelayedPlan × Trial | max R̂ (all parameters) | divergences |
 |---|---|---|---|---|
-| 1 (N = 83) | PENDING | PENDING | PENDING | PENDING |
+| 1 (N = 83) | mode 0.30, HDI [0.18, 0.41] | mode 0.22, HDI [0.09, 0.33] | 1.01 (ESS ≥ 323; participant-level effects all ≤ 1.01) | 0 |
 | 2 (N = 163) | mode 0.36, HDI [0.29, 0.44] | mode 0.25, HDI [0.16, 0.32] | 1.02 (participant-level effects all ≤ 1.02; ESS ≥ 290) | 0 (62 with the published target_accept 0.80) |
 
-Non-centred traces are not tracked by git (`*_noncentered_refit.nc`); regenerate them with the command above.
+With the non-centred Study 1 trace the Results correlations are r = 0.83 (βRT) and r = −0.33 (interaction), versus 0.83 and −0.35 with the centred trace. Non-centred traces are not tracked by git (`*_noncentered_refit.nc`); regenerate them with the command above.
 
 ## 5. Before the pilot exclusion (for the record)
 
