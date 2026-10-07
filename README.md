@@ -4,7 +4,7 @@ Companion archive for **Sharp, P. B., & Eldar, E. — "Humans adaptively delay p
 
 | | |
 |---|---|
-| **Archived version of record (trusted repository)** | Zenodo: `https://doi.org/10.5281/zenodo.XXXXXXX` — *DOI to be inserted after the GitHub release is archived; see [Archiving, citation and license](#archiving-citation-and-license)* |
+| **Archived version of record (trusted repository)** | Zenodo: `https://doi.org/10.5281/zenodo.23210899` — version 1.0.0, deposited 7 Oct 2026 (per-study archives of this repository's committed tree); see [Archiving, citation and license](#archiving-citation-and-license) |
 | **Development version** | https://github.com/sharplabBIU/DelayedPlanning |
 | **Preregistrations (OSF registries)** | Study 1: https://doi.org/10.17605/OSF.IO/QS9JA (registered 26 May 2023) · Study 2: https://doi.org/10.17605/OSF.IO/5Y9Z6 (registered 18 June 2024) |
 | **Incentive pilot study (Discussion)** | https://osf.io/kca68/files/osfstorage |
@@ -321,11 +321,11 @@ The complete task implementation (PsychoPy Builder file, PsychoJS web export, Py
 
 ## Archiving, citation and license
 
-GitHub is not a trusted repository under *Psychological Science*'s policy (no immutable versions or persistent identifiers), so the version of record is archived on **Zenodo** through the GitHub–Zenodo integration: enable the repository at https://zenodo.org/account/settings/github/, create a GitHub release (e.g. `v1.0.0`), and Zenodo archives the release and mints a DOI using the metadata in `.zenodo.json`. Insert the DOI at the top of this file and in the manuscript's Research Transparency Statement.
+GitHub is not a trusted repository under *Psychological Science*'s policy (no immutable versions or persistent identifiers), so the version of record is archived on **Zenodo**: https://doi.org/10.5281/zenodo.23210899 (version 1.0.0, deposited 7 Oct 2026). The Zenodo record holds the committed tree of this repository split per study (`study1.zip`, `study2.zip`, `model_fitting_revision.zip`) together with this README, `data_dictionary.md`, `environment.yml`, `CITATION.cff`, `LICENSE` and `ROBUSTNESS_RESULTS.md`; the Research Transparency Statement of the article cites that DOI for the data, materials and analysis scripts of both studies. Later changes to this repository will be deposited as new Zenodo versions under the same concept record.
 
 Please cite the article and the archive (see `CITATION.cff`):
 
 > Sharp, P. B., & Eldar, E. (in press). Humans adaptively delay planning using cognitive maps. *Psychological Science*.
-> Sharp, P. B., & Eldar, E. (2026). Humans adaptively delay planning using cognitive maps: data, task materials and analysis code [Data set]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Sharp, P. B., & Eldar, E. (2026). Humans adaptively delay planning using cognitive maps: data, task materials and analysis code [Data set]. Zenodo. https://doi.org/10.5281/zenodo.23210899
 
 All data, materials and code are released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0; see `LICENSE`).
