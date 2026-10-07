@@ -30,9 +30,9 @@ Posterior mode and 95% HDI.
 
 | Fit | DelayedPlan (βRT) | DelayedPlan × Trial |
 |---|---|---|
-| Study 1, excluding the 10 pilot participants | PENDING | PENDING |
-| Study 1, optimally-delayed trials only | PENDING | PENDING |
-| Study 2, optimally-delayed trials only | PENDING | PENDING |
+| Study 1, excluding the 10 pilot participants (n = 83) | mode 0.299, HDI [0.177, 0.409] | mode 0.220, HDI [0.105, 0.352] |
+| Study 1, optimally-delayed trials only (n = 92 participants, 7,095 decisions) | mode 0.921, HDI [0.785, 1.074] | mode 0.105, HDI [−0.085, 0.275] (HDI includes 0) |
+| Study 2, optimally-delayed trials only (n = 162 participants, 12,870 decisions) | mode 0.922, HDI [0.817, 1.030] | mode 0.274, HDI [0.126, 0.407] |
 
 ## 3. Non-centred reparameterisation of the published model (`fit_rt_lmm.py --noncentered`, 4 chains)
 
@@ -41,5 +41,11 @@ Addresses the poor mixing of the near-zero random-slope standard deviations in t
 
 | Study | DelayedPlan (βRT) | DelayedPlan × Trial | max R̂ (all parameters) | divergences |
 |---|---|---|---|---|
-| 1 | PENDING | PENDING | PENDING | PENDING |
-| 2 | PENDING | PENDING | PENDING | PENDING |
+| 1 | mode 0.323, HDI [0.215, 0.438] | mode 0.215, HDI [0.110, 0.335] | 1.02 (population-level ≤ 1.01; all σ ≤ 1.02; ESS ≥ 343) | 0 |
+| 2 (target_accept 0.99) | mode 0.363, HDI [0.291, 0.440] | mode 0.246, HDI [0.157, 0.323] | 1.02 (population-level ≤ 1.01; ESS ≥ 290; participant-level effects all ≤ 1.02) | 0 (a run with the published target_accept = 0.80 had 62 divergences) |
+
+Published (centred) fits for comparison: Study 1 mode 0.32 [0.21, 0.43] and 0.21 [0.11, 0.33]; Study 2 mode 0.37 [0.29, 0.44] and 0.24 [0.16, 0.33].
+The non-centred traces reproduce the cross-participant correlations of the Results (posterior-mean DelayedPlan effect vs. mean optimally delayed
+control: Pearson r = 0.84 in Study 1 and 0.83 in Study 2; interaction effect: r = −0.32 in Study 1 and −0.42 in Study 2, versus −0.35 and −0.39 with
+the published traces, whose interaction random slopes were the least well mixed). Traces: `study1/RTdata_model_fitted_withintrial_noncentered_refit.nc`
+and `study2/RTdata_model_fitted_withintrial2_noncentered_refit.nc` (not tracked by git; regenerate with `fit_rt_lmm.py --noncentered --target-accept 0.99`).
