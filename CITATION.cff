@@ -12,6 +12,10 @@ authors:
 repository-code: "https://github.com/sharplabBIU/DelayedPlanning"
 license: CC-BY-4.0
 version: "1.0.0"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.XXXXXXX
+    description: "Zenodo archive of this repository (version 1.0.0)"
 date-released: 2026-10-07
 keywords:
   - planning
