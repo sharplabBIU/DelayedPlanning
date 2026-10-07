@@ -36,7 +36,7 @@ preregistered restriction to optimally-delayed trials.
 
 | Fit | DelayedPlan (βRT) | DelayedPlan × Trial |
 |---|---|---|
-| Study 1, optimally-delayed trials only (80 participants with such trials, 5,979 decisions) | PENDING | PENDING |
+| Study 1, optimally-delayed trials only (80 participants with such trials, 5,979 decisions) | mode 0.90, HDI [0.76, 1.06] | mode 0.07, HDI [−0.10, 0.28] (HDI includes 0) |
 | Study 2, optimally-delayed trials only (162 participants, 12,870 decisions) | mode 0.92, HDI [0.82, 1.03] | mode 0.27, HDI [0.13, 0.41] |
 
 ## 4. Non-centred reparameterisation of the published model (`fit_rt_lmm.py --noncentered --target-accept 0.99`, 4 chains)
