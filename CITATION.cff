@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use these data, materials or analysis scripts, please cite the article and this archive."
+type: dataset
+title: "Humans adaptively delay planning using cognitive maps: data, task materials and analysis code"
+authors:
+  - family-names: Sharp
+    given-names: Paul B.
+    affiliation: "Department of Psychology and The Gonda Multidisciplinary Brain Research Center, Bar-Ilan University; Hebrew University of Jerusalem"
+  - family-names: Eldar
+    given-names: Eran
+    affiliation: "Department of Psychology and Cognitive and Brain Sciences, Hebrew University of Jerusalem"
+repository-code: "https://github.com/sharplabBIU/DelayedPlanning"
+license: CC-BY-4.0
+version: "1.0.0"
+date-released: 2026-10-07
+keywords:
+  - planning
+  - meta-control
+  - model-based reinforcement learning
+  - cognitive map
+  - computational modelling
+preferred-citation:
+  type: article
+  title: "Humans adaptively delay planning using cognitive maps"
+  authors:
+    - family-names: Sharp
+      given-names: Paul B.
+    - family-names: Eldar
+      given-names: Eran
+  journal: "Psychological Science"
+  year: 2026
+  notes: "In press (manuscript PSCI-26-0102)."

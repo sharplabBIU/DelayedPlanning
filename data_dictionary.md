@@ -4,7 +4,7 @@ This document describes the data files shared in this repository (STAR item 8.5)
 
 ## Anonymization
 
-All participant identifiers have been removed. Session files are named `sub-001.csv`, `sub-002.csv`, … (per study), and the same codes are used in the `sub` column of every derived file. Recruitment-platform identifiers inside the raw files (participant, study, and session IDs) have been replaced with the anonymized code or `REDACTED`. `study{1,2}/data/bad_memory/` contains sessions excluded for failing the memory quizzes; `study2/data` additionally contains incomplete sessions that were never analyzed.
+All participant identifiers have been removed. Session files are named `sub-001.csv`, `sub-002.csv`, … (per study), and the same codes are used in the `sub` column of every derived file (as `sub-XXX.csv`). Inside the raw files, the recruitment-platform identifiers (`PROLIFIC_PID`, `STUDY_ID`, `SESSION_ID`) are set to the anonymised code or to `REDACTED`, and the free-text `participant` field (which some participants filled with initials, a first name or their platform ID) has been replaced by the anonymised code in every file. The only remaining session metadata are the PsychoPy session timestamp (`date`), operating system (`OS`) and PsychoPy version. `study{1,2}/data/bad_memory/` contains sessions excluded for failing the memory quizzes; `study2/data` additionally contains incomplete sessions that were never analysed. The demographics files contain only age and sex (Prolific export columns `Status`, `Age`, `Sex`; rows without a `sub` code are returned/unmatched submissions). The mapping between anonymised codes and platform identifiers is held offline by the authors and is not shared.
 
 ## Raw data (`study{1,2}/data/*.csv`)
 
@@ -37,7 +37,7 @@ Tidy planning-phase data: one row per decision (3 decisions × 60 trials per par
 
 ## `study{1,2}/lmm_fixed.csv`
 
-`preprocessed_data.csv` plus derived regressors used by the RT linear-mixed model and the computational-model fits. Additional columns:
+`preprocessed_data.csv` plus derived regressors used by the RT linear-mixed model, the computational-model fits and the behavioural analyses. It is produced from `preprocessed_data.csv` by `study{1,2}/make_lmm_fixed.py` (the column-construction code of the first notebook cell, made standalone). Two provenance notes: (1) the shipped file keeps the participant/row order of the original raw-file listing, whereas a regenerated file follows the order of `preprocessed_data.csv` — row order affects no reported statistic, but the participant index of the stored posterior traces (`RTdata_model_fitted_withintrial*.nc`) follows the shipped file, so `make_lmm_fixed.py` writes `lmm_fixed_regenerated.csv` by default and reports a column-wise comparison; (2) in Study 1 the column `MB_decision` depends on the row order in which goal-reaching trials are first encountered and is not used in any reported analysis. Additional columns:
 
 | Column | Description |
 |---|---|
@@ -63,6 +63,10 @@ Tidy planning-phase data: one row per decision (3 decisions × 60 trials per par
 | `study2/softgate_extra_variants_BICs.csv` | iBIC for the MF-learner and with-replacement variants |
 | `study{1,2}/RTdata_model_fitted_withintrial*.nc` | ArviZ/NetCDF posterior traces of the hierarchical RT LMMs |
 | `model_fitting_revision/results/` | SR/PR MAP fits, model-recovery confusion matrix, relinquish-variant iBICs (see that folder's README) |
+
+## `study{1,2}/optimal_delayed_scores.csv`
+
+Per-participant adaptively-delayed-control score (`optimal_delayed_score`; top-decile definition used in Fig. 2C and the half-split analyses), PSWQ worry total (`worry`), and in Study 1 the route-quiz accuracy (`percent_correct`, merged from `memory_accuracies_subjects_orig_fulltrajectories.csv`); Study 2 additionally has the momentary-stress total (`stress`) and a worry manipulation-check item (`manipCheckWorry`). Produced by `study{1,2}/optimal_delayed_score.py`.
 
 ## Demographics
 

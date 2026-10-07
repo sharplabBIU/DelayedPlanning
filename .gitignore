@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.claude/
+*_regenerated.csv
+*_refit.nc
+analysis_exec_input.ipynb
+analysis_executed.ipynb

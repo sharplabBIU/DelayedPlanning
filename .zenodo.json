@@ -1,0 +1,17 @@
+{
+  "title": "Humans adaptively delay planning using cognitive maps: data, task materials and analysis code",
+  "upload_type": "dataset",
+  "description": "<p>Companion archive for Sharp &amp; Eldar, <em>Humans adaptively delay planning using cognitive maps</em> (Psychological Science, manuscript PSCI-26-0102). Contains the anonymised raw trial-level data of both preregistered studies (Study 1, n = 93 retained of 101; Study 2, n = 163 retained of 251), the PsychoPy/PsychoJS task implementation and stimuli (materials), the preprocessing pipeline, every analysis script and notebook used for the results, tables and figures, fitted model parameters and posterior traces, and a README with step-by-step reproduction instructions and a reproducibility-check table. Preregistrations: Study 1 https://doi.org/10.17605/OSF.IO/QS9JA; Study 2 https://doi.org/10.17605/OSF.IO/5Y9Z6.</p>",
+  "creators": [
+    {"name": "Sharp, Paul B.", "affiliation": "Bar-Ilan University; Hebrew University of Jerusalem"},
+    {"name": "Eldar, Eran", "affiliation": "Hebrew University of Jerusalem"}
+  ],
+  "access_right": "open",
+  "license": "CC-BY-4.0",
+  "keywords": ["planning", "meta-control", "model-based reinforcement learning", "cognitive map", "computational modelling", "Prolific", "PsychoPy"],
+  "related_identifiers": [
+    {"identifier": "https://doi.org/10.17605/OSF.IO/QS9JA", "relation": "isSupplementedBy", "resource_type": "publication-preprint", "scheme": "doi"},
+    {"identifier": "https://doi.org/10.17605/OSF.IO/5Y9Z6", "relation": "isSupplementedBy", "resource_type": "publication-preprint", "scheme": "doi"},
+    {"identifier": "https://github.com/sharplabBIU/DelayedPlanning", "relation": "isSupplementTo", "scheme": "url"}
+  ]
+}
