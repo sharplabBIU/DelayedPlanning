@@ -7,3 +7,6 @@ __pycache__/
 *_refit.nc
 analysis_exec_input.ipynb
 analysis_executed.ipynb
+# local, never archived
+manuscript/
+zenodo_upload/
