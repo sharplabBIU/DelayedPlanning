@@ -1,6 +1,6 @@
 # Humans adaptively delay planning using cognitive maps
 
-Companion archive for **Sharp, P. B., & Eldar, E. — "Humans adaptively delay planning using cognitive maps"** (*Psychological Science*, in press; manuscript PSCI-26-0102). It contains the anonymised raw data of both preregistered studies, the task implementation and stimuli (materials), the preprocessing pipeline, every analysis script and notebook behind the manuscript and its Supplemental Material, and the fitted parameters and posterior traces, so that every reported value can be re-derived.
+Companion archive for **Sharp, P. B., & Eldar, E. — "Humans adaptively delay planning using cognitive maps"** (manuscript PSCI-26-0102, under review at *Psychological Science*). It contains the anonymised raw data of both preregistered studies, the task implementation and stimuli (materials), the preprocessing pipeline, every analysis script and notebook behind the manuscript and its Supplemental Material, and the fitted parameters and posterior traces, so that every reported value can be re-derived.
 
 | | |
 |---|---|
@@ -325,7 +325,7 @@ GitHub is not a trusted repository under *Psychological Science*'s policy (no im
 
 Please cite the article and the archive (see `CITATION.cff`):
 
-> Sharp, P. B., & Eldar, E. (in press). Humans adaptively delay planning using cognitive maps. *Psychological Science*.
+> Sharp, P. B., & Eldar, E. (under review). Humans adaptively delay planning using cognitive maps. Manuscript PSCI-26-0102, *Psychological Science*.
 > Sharp, P. B., & Eldar, E. (2026). Humans adaptively delay planning using cognitive maps: data, task materials and analysis code [Data set]. Zenodo. https://doi.org/10.5281/zenodo.23210899
 
 All data, materials and code are released under the Creative Commons Attribution 4.0 International licence (CC BY 4.0; see `LICENSE`).
